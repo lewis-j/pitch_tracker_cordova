@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+    <!-- This is a wide open CSP declaration. To lock this down for production, see below. -->
+    <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' http://* 'unsafe-inline'; script-src 'self' http://* 'unsafe-inline' 'unsafe-eval'" />
+
+    <title>Baseball Pitch Tracker</title>
+      <link rel="stylesheet" href="./dependencies/bs/bootstrap.min.css">
+      <link rel="stylesheet" type="text/css" href="./css/style.css">
+      <link rel="stylesheet" type="text/css" href="./css/menu-style.css">
+</head>
+
+<body>
+  <div class="modal" tabindex="-1" role="dialog" id"login-modal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Modal body text goes here.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+  <div id="start-background">
+       <div id="select-menu" >
+           <h3>Select Game Options</h3>
+            <div class="form-group">
+           <p class="form-item"> Pitcher <button id="sync-roster"><i class='fas fa-sync'></i></button></p>
+           <select class="form-item" id="roster-list">
+             <option selected disabled value="unselected"><i>Select Roster</i></option>
+          </select>
+           <select class="form-item" id="pitcher-name">
+             <option selected disabled value="unselected"><i>Select Pitcher</i></option>
+          </select>
+          </div>
+          <div class="form-group" id="game-type-group" style="visibility: hidden;">
+           <p class="form-item game-type">Game Type</p>
+                      <select class="form-item" id="game-type">
+                          <option selected disabled value="unselected"><i>Select game type</i></option>
+                          <option value="Game">Game</option>
+                          <option value="Bullpen">Bullpen</option>
+                          <option value="Intersquad">Intersquad</option>
+                      </select>
+          </div>
+          <div class="form-group" id="op-team-group" style="visibility: hidden;">
+           <p class="form-item">Opposing Team</p>
+           <select class="form-item" id="op-team-name">
+             <option selected disabled value="unselected"><i>Select opposing team</i></option>
+          </select>
+          </div>
+              <div class="form-group" id="game-num-group" style="visibility: hidden;">
+           <p class="form-item game-type">Game #</p>
+                      <select class="form-item" id="game-num">
+                          <option selected value="1">1</option>
+                          <option value="2">2</option>
+
+                      </select>
+          </div>
+              <button class="btn btn-secondary" id="new-btn-back">Back</button>
+              <button class="btn btn-primary" id="start-btn">Start Game</button>
+
+      </div>
+      <div id="opening-menu">
+        <img id="logo"  src="./img/bearcubs.png" alt="Santa Rosa Bear Cubs Logo">
+        <h3>Santa Rosa Jr College Pitch Tracker</h3>
+        <button class="btn btn-primary" id="new-btn">Start New Game</button>
+        <button class="btn btn-primary" id="load-btn">Load Last Game</button>
+        <button class="btn btn-primary" id="database-btn">SRJC Pitch Tracker Data</button>
+      </div>
+      </div>
+
+
+      <div id="left-nav-menu" class="clear-header">
+          <div class="left-menu-item" id="switch-pitcher">Switch Pitcher<i class="fas fa-baseball-ball"></i></div>
+          <div class="left-menu-item" id="transfer-data">Upload Local<i class="fas fa-upload"></i></div>
+          <div class="left-menu-item" id="view-data">Cubs Pitch Data<i class="fas fa-database"></i></div>
+      </div>
+          <div id="select-pitcher-screen" class="clear-header">
+              <a href="javascript:void(0)" class="close-btn">&times;</a>
+          <div id="select-pitcher-menu">
+          <h2>Select New Pitcher</h2>
+              <select id="new-pitcher-select"></select>
+              <button class="btn btn-primary" id="enter-new-pitcher">Enter new Pitcher</button>
+
+          </div>
+      </div>
+      <div id="transfer-edit-screen" class="clear-header">
+          <a href="javascript:void(0)" class="close-btn">&times;</a>
+          <div id="transfer-edit-title">
+            <h2>Local pitch Data</h2>
+          </div>
+          <div id='table-container'>
+          <table class="table table-striped table-sm"  id="transfer-edit-table">
+            <thead>
+              <tr>
+                <th scope='col'>Player Name</th>
+                  <th scope='col'>Date</th>
+                  <th scope='col'>Game type</th>
+                  <th scope='col'>Opponent</th>
+                  <th scope='col'>options</th>
+                </tr>
+              </thead>
+              <tbody id="transfer-edit-content">
+
+              </tbody>
+            </table>
+            </div>
+          <div class="transfer-edit-footer">
+            <button class="btn btn-primary" id="upload-btn" data-toggle="modal" data-target="#transfer-local-modal">Upload to Database<i class="fas fa-upload"></i></button>
+          </div>
+     </div>
+     <div id="delete-local-modal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+        <h4 class="modal-title">Delete Pitch Session</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+        <div class="modal-body">
+          <p>Are you sure you would like to delete this pitchers session data? </p>
+          <div id="delete-local-modal-body"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" id="confirm-local-delete" data-dismiss="modal">Confirm Delete</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="transfer-local-modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+   <!-- Modal content-->
+   <div class="modal-content">
+     <div class="modal-header">
+     <h4 class="modal-title">Upload Data</h4>
+     <button type="button" class="close" data-dismiss="modal">&times;</button>
+   </div>
+     <div class="modal-body">
+       <p>Are you sure you would like to upload data? Currently saved content will no longer be stored locally.</p>
+       <div id="delete-local-modal-body"></div>
+     </div>
+     <div class="modal-footer">
+       <button type="button" class="btn btn-success" id="confirm-local-upload" data-dismiss="modal">Confirm upload</button>
+       <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+     </div>
+   </div>
+
+  </div>
+  </div>
+
+  <div class="container-fluid" id="app-wrapper">
+
+    <div class="row" id="header-title" style="font-size:30px;cursor:pointer"><div id='menu-btn'>&#9776;</div><div id="app-title">SRJC Pitch Tracker</div><div id='fullscreen'><i class="fas fa-expand"></i></div></div>
+         <div class="row">
+
+  <!--Left Panel Game information display   -->
+          <div class="col-sm-2 left-panel">
+              <div class="bearcub-logo" onclick="alert('Please Login to Begin a Game')"><img src="img/bearcubs.png" width="111px" height="90px" >
+              </div>
+              <div id="session-game">
+              <div class="session-item"><div id="date">
+              </div></div>
+              <div class="session-item">
+              <h6>Game Type</h6>
+              <div id="game-type-dspy">nothing selected</div>
+              </div>
+              <div class="session-item">
+              <h6>Pitcher</h6>
+              <div id="pitcher-name-dspy">nothing selected</div>
+              </div>
+              <div class="session-item">
+              <h6>Opposing Team</h6>
+              <div id="op-team-name-dspy">nothing selected</div>
+                  </div>
+                  </div>
+                  <div id="session-count">
+                  <div class="session-item">
+              <h6>Strike %</h6>
+              <svg id="strike-pie" width="75" height="75"></svg>
+                  </div>
+
+              <div class="session-item">
+              <h6>Total Pitches</h6>
+              <div id="pitch-count" class="count">0</div>
+                  </div>
+              <div class="session-item">
+              <h6>Total Balls</h6>
+              <div id="total-balls" class="count">0</div>
+
+                  </div>
+              <div class="session-item">
+              <h6>Total Strikes</h6>
+              <div id="total-strikes" class="count">0</div>
+                  </div>
+                   <div class="session-item">
+              <h6>Balls / Strikes</h6>
+              <div class = "current-count" id="balls">0</div>
+               <div class = "current-count" id="strikes">0</div>
+
+                  </div>
+
+              </div>
+
+
+  <img class="batter-ui" id="right-batter" src="img/RHH.png">
+          </div>
+          <div class="col-sm-8 svg-chart nav-close">
+            <div id="mph-wrapper">
+  <svg id="mph-dropdown"  version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+  	width="55px" viewBox="70 20 11 105" xml:space="preserve">
+  <style type="text/css">
+  	.st0{display:none;}
+  	.st1{display:inline;}
+  	.st2{display:inline;fill:#C8C8C8;stroke:#2B3990;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+  	.st3{display:inline;fill:#828080;stroke:#4E4E4E;stroke-width:0.1;stroke-miterlimit:10;}
+  	.st4{display:inline;fill:#C6C6C6;stroke:#4E4E4E;stroke-width:0.1;stroke-miterlimit:10;}
+  	.st5{display:inline;fill:#FFFFFF;stroke:#FF0000;stroke-width:0.8123;stroke-miterlimit:10;}
+  	.st6{font-family:'OCRAStd';}
+  	.st7{font-size:6px;}
+  	.st8{fill:#231F20;}
+  	.st9{fill:#FFFFFF;}
+  	.st10{font-size:8px;}
+  	.st11{fill:#D0ECFF;}
+  </style>
+  <font horiz-adv-x="1000">
+  <!-- Copyright 1988, 2002 Adobe Systems Incorporated. All rights reserved. -->
+  <font-face font-family="OCRAStd" units-per-em="1000" underline-position="-100" underline-thickness="100"/>
+  <missing-glyph horiz-adv-x="720" d="M610,0l0,700l-500,0l0,-700M530,650l-170,-255l-170,255M560,95l-170,255l170,255M190,50l170,255l170,-255M160,605l170,-255l-170,-255z"/>
+  <glyph unicode="8" horiz-adv-x="720" d="M313,439l0,239l94,0l0,-239M263,778C229,778 213,754 213,728l0,-289C182,439 158,428 140,411C122,394 113,369 113,338l0,-238C113,39 151,0 213,0l294,0C569,0 607,39 607,100l0,238C607,369 598,394 580,411C562,428 538,439 507,439l0,289C507,754 491,778 457,778M213,100l0,239l294,0l0,-239z"/>
+  <glyph unicode="5" horiz-adv-x="720" d="M312,678l245,0C583,678 607,692 607,728C607,764 583,778 557,778l-345,0l0,-439l295,0l0,-239l-231,0C260,100 237,114 223,120l-30,13C182,138 173,141 161,141C135,141 113,117 113,91C113,56 143,47 170,35l38,-17C233,7 248,0 274,0l222,0C532,0 558,4 583,34C604,59 607,81 607,112l0,214C607,361 604,385 576,411C552,434 528,439 496,439l-184,0z"/>
+  <glyph unicode="4" horiz-adv-x="720" d="M263,354l0,374C263,753 251,778 213,778C175,778 163,753 163,728l0,-474l294,0l0,-204C457,18 471,0 507,0C543,0 557,18 557,50l0,204C583,254 607,268 607,304C607,340 583,354 557,354l0,289C557,668 545,693 507,693C469,693 457,668 457,643l0,-289z"/>
+  <glyph unicode="9" horiz-adv-x="720" d="M507,100C478,100 457,80 457,50C457,23 477,0 507,0l50,0C587,0 607,23 607,50l0,678C607,754 585,778 557,778l-394,0C135,778 113,754 113,728l0,-256C113,446 135,422 163,422l344,0M213,522l0,156l294,0l0,-156z"/>
+  <glyph unicode="1" horiz-adv-x="720" d="M410,100l0,678l-247,0C137,778 113,764 113,728C113,692 137,678 163,678l147,0l0,-578l-147,0C137,100 113,86 113,50C113,14 137,0 163,0l394,0C583,0 607,14 607,50l0,252C607,331 594,352 557,352C520,352 507,331 507,302l0,-202z"/>
+  <glyph unicode="7" horiz-adv-x="720" d="M507,678l0,-138C507,496 509,497 476,468l-138,-119C313,327 312,324 312,291l0,-241C312,18 326,0 362,0C398,0 412,18 412,50l0,194C412,279 414,281 440,304l140,121C608,449 607,453 607,488l0,290l-444,0C131,778 113,750 113,728l0,-50C113,656 131,628 163,628C195,628 213,656 213,678z"/>
+  <glyph unicode="6" horiz-adv-x="720" d="M213,678C242,678 263,698 263,728C263,754 242,778 216,778l-60,0C121,778 113,751 113,728l0,-665C113,17 131,0 178,0l364,0C587,0 607,16 607,63l0,224C607,333 597,354 547,354l-334,0M507,254l0,-154l-294,0l0,154z"/>
+  <glyph unicode="3" horiz-adv-x="720" d="M507,678l0,-166C507,456 485,439 457,439l-196,0C235,439 211,425 211,389C211,353 235,339 261,339l196,0C485,339 507,322 507,266l0,-166l-344,0C137,100 113,86 113,50C113,14 137,0 163,0l344,0C564,0 607,43 607,100l0,192C607,332 599,361 568,389C599,417 607,446 607,486l0,192C607,735 564,778 507,778l-344,0C137,778 113,764 113,728C113,692 137,678 163,678z"/>
+  <glyph unicode="2" horiz-adv-x="720" d="M213,339l282,0C528,339 551,344 576,367C604,393 607,420 607,456l0,205C607,697 604,724 576,750C551,773 528,778 495,778l-332,0C137,778 113,764 113,728C113,692 137,678 163,678l344,0l0,-239l-281,0C151,439 113,401 113,326l0,-326l444,0C583,0 607,14 607,50C607,86 583,100 557,100l-344,0z"/>
+  <glyph unicode="0" horiz-adv-x="720" d="M213,778C158,778 113,733 113,678l0,-578C113,44 156,0 213,0l294,0C564,0 607,44 607,100l0,578C607,733 562,778 507,778M213,100l0,578l294,0l0,-578z"/>
+  </font>
+
+  <g id="HUD-2">
+  	<rect id="pop-out" x="70" y="24.7" class="st6" width="11.1" height="99.1"/>
+  	<g id="zero-group">
+  		<path class="st9" d="M77.9,35.1H72c-0.6,0-1.1-0.5-1.1-1.1v-5.8
+  			c0-0.6,0.5-1.1,1.1-1.1h5.8c0.6,0,1.1,0.5,1.1,1.1V34C79,34.6,78.5,35.1,77.9,35.1z"/>
+  		<text transform="matrix(1 0 0 1 72.0724 34.0928)" class="st6 st10">0</text>
+  	</g>
+  	<g id="one-group" >
+  		<path class="st9" d="M77.9,44.7H72c-0.6,0-1.1-0.5-1.1-1.1v-5.8
+  			c0-0.6,0.5-1.1,1.1-1.1h5.8c0.6,0,1.1,0.5,1.1,1.1v5.8C79,44.2,78.5,44.7,77.9,44.7z"/>
+  		<text transform="matrix(1 0 0 1 72.0724 43.7103)" class="st6 st10">1</text>
+  	</g>
+  	<g id="two-group" >
+  		<path class="st9" d="M77.9,54.3H72c-0.6,0-1.1-0.5-1.1-1.1v-5.8
+  			c0-0.6,0.5-1.1,1.1-1.1h5.8c0.6,0,1.1,0.5,1.1,1.1v5.8C79,53.8,78.5,54.3,77.9,54.3z"/>
+  		<text transform="matrix(1 0 0 1 72.0724 53.3279)" class="st6 st10">2</text>
+  	</g>
+  	<g id="three-group">
+  		<path class="st9" d="M77.9,63.9H72c-0.6,0-1.1-0.5-1.1-1.1V57
+  			c0-0.6,0.5-1.1,1.1-1.1h5.8c0.6,0,1.1,0.5,1.1,1.1v5.8C79,63.4,78.5,63.9,77.9,63.9z"/>
+  		<text transform="matrix(1 0 0 1 72.0724 62.9454)" class="st6 st10">3</text>
+  	</g>
+  	<g id="four-group" >
+  		<path class="st9" d="M77.9,73.6H72c-0.6,0-1.1-0.5-1.1-1.1v-5.8
+  			c0-0.6,0.5-1.1,1.1-1.1h5.8c0.6,0,1.1,0.5,1.1,1.1v5.8C79,73,78.5,73.6,77.9,73.6z"/>
+  		<text transform="matrix(1 0 0 1 72.0724 72.563)" class="st6 st10">4</text>
+  	</g>
+  	<g id="five-group" >
+  		<path class="st9" d="M77.9,84.5H72c-0.6,0-1.1-0.5-1.1-1.1v-5.8
+  			c0-0.6,0.5-1.1,1.1-1.1h5.8c0.6,0,1.1,0.5,1.1,1.1v5.8C79,84,78.5,84.5,77.9,84.5z"/>
+  		<text transform="matrix(1 0 0 1 72.0724 83.5545)" class="st6 st10">5</text>
+  	</g>
+  	<g id="six-group" >
+  		<path class="st9" d="M77.9,94.1H72c-0.6,0-1.1-0.5-1.1-1.1v-5.8
+  			c0-0.6,0.5-1.1,1.1-1.1h5.8c0.6,0,1.1,0.5,1.1,1.1V93C79,93.6,78.5,94.1,77.9,94.1z"/>
+  		<text transform="matrix(1 0 0 1 72.0724 93.1534)" class="st6 st10">6</text>
+  	</g>
+  	<g id="seven-group" >
+  		<path class="st9" d="M77.9,103.8H72c-0.6,0-1.1-0.5-1.1-1.1v-5.8
+  			c0-0.6,0.5-1.1,1.1-1.1h5.8c0.6,0,1.1,0.5,1.1,1.1v5.8C79,103.2,78.5,103.8,77.9,103.8z"/>
+  		<text transform="matrix(1 0 0 1 72.0724 102.771)" class="st6 st10">7</text>
+  	</g>
+  	<g id="eight-group" >
+  		<path class="st9" d="M77.9,113.4H72c-0.6,0-1.1-0.5-1.1-1.1v-5.8
+  			c0-0.6,0.5-1.1,1.1-1.1h5.8c0.6,0,1.1,0.5,1.1,1.1v5.8C79,112.9,78.5,113.4,77.9,113.4z"/>
+  		<text transform="matrix(1 0 0 1 72.0724 112.4867)" class="st6 st10">8</text>
+  	</g>
+  	<g id="nine-group" >
+  		<path class="st9" d="M77.9,123H72c-0.6,0-1.1-0.5-1.1-1.1V116
+  			c0-0.6,0.5-1.1,1.1-1.1h5.8c0.6,0,1.1,0.5,1.1,1.1v5.8C79,122.5,78.5,123,77.9,123z"/>
+  		<text transform="matrix(1 0 0 1 72.0724 122.1042)" class="st6 st10">9</text>
+  	</g>
+  </g>
+  </svg>
+              </div>
+             <div  id="pitch-zone">
+              <svg width="650px" height="713px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <g id="mySVG">
+    <rect id="rect"  x="2%" y="0" width="96%" height="100%"
+    style="fill:white;stroke:rgba(0,0,0,0);stroke-width:2;fill-opacity:0.1;stroke-opacity:0.9" />
+      <rect class="strike-rect" x="25%" y="20%" width="50%" height="60%"
+    style="fill:white;fill-opacity:0.1;stroke-opacity:0.9" />
+    <line class="strike-rect" x1="50%" y1="20%" x2="50%" y2="80%" style="stroke-width:3" />
+    <line class="strike-rect" x1="25%" y1="40%" x2="75%" y2="40%" style="stroke-width:3" />
+  </g>
+
+  </svg></div></div>
+          <div class="col-sm-2 right-panel nav-close">
+
+               <div class="title">Pitch Velocity</div>
+                  <div id="mph-ui">
+          <h4 id="mph-text">00</h4>
+             <p id="mph-title" >mph</p>
+          </div>
+              <img class="batter-ui" id="left-batter" src="img/LHH.png">
+
+
+                         <div class="switch-field batter-switch">
+        <div class="title">Batter</div>
+        <div id="batter-handedness">
+         <input type="radio" id="switch_lhh"  name="switch_handed" value="Left" />
+        <label for="switch_lhh">LEFT</label>
+
+        <input type="radio" id="switch_rhh" name="switch_handed" value="Right" />
+        <label for="switch_rhh">RIGHT</label>
+             </div>
+      </div>
+
+       <div class="title">First Pitch</div>
+        <label class="toggle">
+     <input type="checkbox" id="first-pitch">
+     <span class="slider-2"></span>
+     </label>
+
+                            <div class="switch-field" id="play">
+        <div class=" title">Play</div>
+
+        <input type="radio" id="switch_stk" name="switch_play" value="Strike" />
+        <label for="switch_stk">Strike</label>
+
+        <input type="radio" id="switch_ball" name="switch_play" value="Ball" />
+        <label for="switch_ball">Ball</label>
+      </div>
+
+          <div id="inner-panel">
+                 <div id="pitch-fields" class="switch-field">
+        <div class="title">Pitch Type</div>
+
+        <input type="radio" id="switch_FB" name="switch_pitch" value="FB" />
+        <label class="pitch-label"  id="label_FB" for="switch_FB">Fast</label>
+
+        <input type="radio" id="switch_CH" name="switch_pitch" value="CH" />
+        <label id="label_CH" class="pitch-label" for="switch_CH">Change</label>
+
+        <input type="radio" id="switch_SL" name="switch_pitch" value="SL" />
+        <label class="pitch-label" id="label_SL" for="switch_SL">Slider</label>
+
+        <input type="radio" id="switch_CB" name="switch_pitch" value="CB" />
+        <label class="pitch-label" id="label_CB" for="switch_CB">Curve</label>
+
+        <input type="radio" id="switch_other" name="switch_pitch" value="other" />
+        <label class="pitch-label" id="label_OT" for="switch_other">Other</label>
+
+      </div>
+
+                  <div id="end-play-options" class="switch-field" >
+        <div class="title">End Play</div>
+
+          <div class="switch-inputs">
+        <input id="switch_w" type="radio" name="switch_end" value="Walk" />
+        <label id="label_w" for="switch_w">Walk</label>
+
+        <input type="radio" id="switch_h" name="switch_end" value="Hit" />
+        <label for="switch_h">Hit</label>
+
+         <input type="radio" id="switch_sOut" name="switch_end" value="Strike Out" />
+        <label id="label_sOut" for="switch_sOut">Strike Out</label>
+            </div>
+      </div>
+
+          <button class="entry" id="data-entry">Enter</button>
+          <button type="button" class="entry" id="undo-entry"><i class="fas fa-undo"></i></button>
+
+             </div>
+
+          </div>
+      </div>
+  </div>
+    <script src="./js/config.js"></script>
+    <script src="https://kit.fontawesome.com/81ea6c8bc9.js" crossorigin="anonymous"></script>
+    <script src="dependencies/jquery-3.3.1.js"></script>
+    <script src="dependencies/bs/bootstrap.min.js"></script>
+    <script src="dependencies/pouch/pouchdb-7.0.0.min.js"></script>
+    <script src="dependencies/pouch/pouchdb.find.js"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script type="text/javascript" src="js/xmlCalls.js"></script>
+    <script type="text/javascript" src="js/pouchDBTransfer.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+</body>
+
+</html>
