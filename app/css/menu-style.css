@@ -11,6 +11,7 @@
       width: 105px;
 
 }
+
 #header-title{
   background-color: #a80311;
   color:white;
@@ -201,7 +202,7 @@ margin-left: 33px;
   color:white;
 }
 
-#transfer-edit-screen{
+.transfer-edit-screen{
     height: 100%;
     width: 0px;
     position: fixed;
@@ -210,6 +211,12 @@ margin-left: 33px;
     transition: 0.5s;
     background-color: grey;
     overflow-x: hidden;
+}
+
+.full-open-menu{
+  width: 100%;
+  left:0px;
+  top:0px;
 }
 
 .close-btn {

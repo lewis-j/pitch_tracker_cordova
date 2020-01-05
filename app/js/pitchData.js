@@ -5,8 +5,6 @@ var colors = ["red","blue","green","purple","orange"];
 function OnDeviceReady(){
 
 
-getSeason();
-
    document.getElementById('season-select').addEventListener('change', (event) => {
                    getPlayers(rosterList[event.target.options.selectedIndex]);
                    console.log("change event fired!",rosterList[event.target.options.selectedIndex]);

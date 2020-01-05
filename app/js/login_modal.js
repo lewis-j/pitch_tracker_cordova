@@ -1,10 +1,12 @@
 $(function(){
       $("#modal-container").load("../includes/login_modal.html",()=>{
+        var callback = $('#modal-container').attr('data-callback');
+        window[callback].call();
+
               $('#login-form').submit((e)=>{
           console.log("form submitted");
-
                 var params = `username=${$('#userName').val()}&password=${$('#password').val()}&login=true`;
-              var callback = $('#modal-container').attr('data-callback');
+
                 console.log('params',params);
                 var xhttp = new XMLHttpRequest();
                 xhttp.onreadystatechange = function() {
@@ -32,7 +34,7 @@ $(function(){
          var xhttp = new XMLHttpRequest();
          xhttp.onreadystatechange = function() {
              if (this.readyState == 4 && this.status == 200) {
-                 $('#login-modal').modal('toggle');
+                 window.open('../index.html','_self');
                }
              }
              xhttp.onerror = function () {

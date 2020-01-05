@@ -46,7 +46,7 @@ document.body.style.setProperty('--OT-color',pitchColors[4]);
 
  //set dynamic style rules
  document.getElementById("left-nav-menu").style.left = "-17vw";
- $('.clear-header').css('top', $('#header-title').height()); 
+ $('.clear-header').css('top', $('#header-title').height());
   scalePitchGraph();
  window.addEventListener('resize', ()=>{
    scalePitchGraph();
@@ -685,8 +685,10 @@ $('#op-team-name').click((e)=>{
 
 
  $('#load-btn').click(() => {
-
-   loadPitchGame();
+   $('.transfer-edit-screen').addClass('full-open-menu');
+   $('#transfer-edit-content').empty();
+  loadPouchPitchMenu();
+   // loadPitchGame();
    });
 
  function loadPitchGame(id){
@@ -722,6 +724,97 @@ $('#op-team-name').click((e)=>{
     }).catch((err) => {
       console.error(err);
     });;
+
+ }
+
+ function   loadPouchPitchMenu(){
+
+   getPouchPitchers().then((res)=>{
+
+    var body = document.getElementById('transfer-edit-content');
+    var button = document.createElement('button');
+        button.setAttribute('class', 'delete-pouch');
+        // button.setAttribute('data-toggle','modal');
+        // button.setAttribute('data-target','#delete-local-modal');
+
+     res.forEach((item)=>{
+
+       playerInfo = item.doc;
+        tr =  document.createElement('tr');
+        tr.setAttribute('class', 'row-items');
+        tr.setAttribute('data-id',playerInfo._id);
+        td = document.createElement('td');
+        td.innerHTML = playerInfo.playerName;
+        tr.appendChild(td);
+        td = td.cloneNode(true);
+        td.innerHTML = playerInfo.date;
+        tr.appendChild(td);
+        td = td.cloneNode(true);
+        td.innerHTML = playerInfo.gameType;
+        tr.appendChild(td);
+        td = td.cloneNode(true);
+        td.innerHTML = playerInfo.opponent;
+        button = button.cloneNode(true);
+        button.innerHTML = 'Delete';
+        tr.appendChild(td);
+        tr.appendChild(button);
+
+    body.appendChild(tr);
+
+
+     });
+
+     $('.row-items').click((e)=>{
+
+       clearCircles();
+       loadPitchGame(e.target.parentNode.dataset.id);
+       closeAllMenus(document.getElementById('transfer-edit-screen'));
+     });
+
+
+
+
+     $('.delete-pouch').click((e)=>{
+       e.stopPropagation();
+    var htmlCollection =  e.target.parentNode.children;
+    var rowTitles =  e.target.parentNode.parentNode.parentNode.children[0].children[0].children;
+
+    var table = document.createElement('table');
+    table.setAttribute('class','game-stat table table-striped table-border  table-sm');
+    var body = document.createElement('tbody');
+
+    for(var i=0; i< htmlCollection.length -1; i++){
+
+
+      var tr =  document.createElement('tr');
+      var th =  document.createElement('th');
+      var thProp =  document.createElement('th');
+
+      th.innerHTML = `${rowTitles[i].innerHTML}`;
+      thProp.innerHTML = htmlCollection[i].innerHTML;
+
+      tr.appendChild(th);
+      tr.appendChild(thProp);
+      body.appendChild(tr);
+      table.appendChild(body);
+
+    }
+
+
+   document.getElementById('delete-local-modal-body').innerHTML="";
+   document.getElementById('delete-local-modal-body').appendChild(table);
+
+      var deleteBtn = document.getElementById('confirm-local-delete');
+      deleteBtn.setAttribute('data-id',e.target.parentNode.dataset.id);
+
+       $("#delete-local-modal").modal('show');
+     });
+
+
+   }).catch((err)=>{
+     console.error("Error in script.js:", err);
+
+   });
 
  }
 
@@ -872,103 +965,11 @@ function arcTween(a) {
 
  $('#transfer-data').click(() => {
 
-   // $('#transfer-data').text("Starting transfer!");
-   $('#transfer-edit-screen').css('width', '83vw');
-   $('#transfer-edit-screen').css('left', '17vw');
-
-
+   $('.transfer-edit-screen').css('width', '83vw');
+   $('.transfer-edit-screen').css('left', '17vw');
    $('#transfer-edit-content').empty();
 
-    getPouchPitchers().then((res)=>{
-
-     var body = document.getElementById('transfer-edit-content');
-     var button = document.createElement('button');
-         button.setAttribute('class', 'delete-pouch');
-         // button.setAttribute('data-toggle','modal');
-         // button.setAttribute('data-target','#delete-local-modal');
-
-      res.forEach((item)=>{
-
-        playerInfo = item.doc;
-         tr =  document.createElement('tr');
-         tr.setAttribute('class', 'row-items');
-         tr.setAttribute('data-id',playerInfo._id);
-         td = document.createElement('td');
-         td.innerHTML = playerInfo.playerName;
-         tr.appendChild(td);
-         td = td.cloneNode(true);
-         td.innerHTML = playerInfo.date;
-         tr.appendChild(td);
-         td = td.cloneNode(true);
-         td.innerHTML = playerInfo.gameType;
-         tr.appendChild(td);
-         td = td.cloneNode(true);
-         td.innerHTML = playerInfo.opponent;
-         button = button.cloneNode(true);
-         button.innerHTML = 'Delete';
-         tr.appendChild(td);
-         tr.appendChild(button);
-
-     body.appendChild(tr);
-
-
-      });
-
-      $('.row-items').click((e)=>{
-
-        clearCircles();
-        loadPitchGame(e.target.parentNode.dataset.id);
-        closeAllMenus(document.getElementById('transfer-edit-screen'));
-      });
-
-
-
-
-      $('.delete-pouch').click((e)=>{
-        e.stopPropagation();
-     var htmlCollection =  e.target.parentNode.children;
-     var rowTitles =  e.target.parentNode.parentNode.parentNode.children[0].children[0].children;
-
-     var table = document.createElement('table');
-     table.setAttribute('class','game-stat table table-striped table-border  table-sm');
-     var body = document.createElement('tbody');
-
-     for(var i=0; i< htmlCollection.length -1; i++){
-
-
-       var tr =  document.createElement('tr');
-       var th =  document.createElement('th');
-       var thProp =  document.createElement('th');
-
-       th.innerHTML = `${rowTitles[i].innerHTML}`;
-       thProp.innerHTML = htmlCollection[i].innerHTML;
-
-       tr.appendChild(th);
-       tr.appendChild(thProp);
-       body.appendChild(tr);
-       table.appendChild(body);
-
-     }
-
-
-    document.getElementById('delete-local-modal-body').innerHTML="";
-    document.getElementById('delete-local-modal-body').appendChild(table);
-
-       var deleteBtn = document.getElementById('confirm-local-delete');
-       deleteBtn.setAttribute('data-id',e.target.parentNode.dataset.id);
-
-        $("#delete-local-modal").modal('show');
-      });
-
-
-    }).catch((err)=>{
-      console.error("Error in script.js:", err);
-
-    });
-
-
-
-
+  loadPouchPitchMenu();
 // closeAllMenus(document.getElementById('select-pitcher-screen'));
 hideMenu(document.getElementById('select-pitcher-screen'));
 

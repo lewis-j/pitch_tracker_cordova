@@ -2,7 +2,6 @@ window.addEventListener('load', OnDeviceReady, false);
 
 function OnDeviceReady(){
 var yearSelectInit = false;
-fetchList();
 
 document.getElementById('edit-add-season').style.display = "none";
 
@@ -91,7 +90,16 @@ function fetchList(){
 
 
 
-xhrPost(null, url + "get_season_list.php", (res)=>{ listToView(res) } );
+xhrPost(null, url + "get_team_list.php", (res)=>{
+  console.log("callback response::", res);
+ if(res.loggedIn){
+   listToView(res.teamList);
+ }else{
+   $('#login-modal').modal('toggle');
+ }
+
+
+ } );
 
 
 }
