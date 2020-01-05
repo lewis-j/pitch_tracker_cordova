@@ -4,6 +4,7 @@ var colors = ["red","blue","green","purple","orange"];
 
 function OnDeviceReady(){
 
+
 getSeason();
 
    document.getElementById('season-select').addEventListener('change', (event) => {
@@ -310,14 +311,20 @@ function getSeason(){
    var xhttp = new XMLHttpRequest();
    xhttp.onreadystatechange = function() {
        if (this.readyState == 4 && this.status == 200) {
+         console.log("RESPONSE roster list  :  ", xhttp.response);
+         var object =  JSON.parse(xhttp.response);
+         if(object.loggedIn){
+           rosterList = object.teamList;
+           console.log("roster list  :  ", rosterList);
+           addRosterFormOptions(rosterList);
+           getPlayers(rosterList[0]);
+         }else{
+           console.log("open modal",$('#login-modal'));
+           $('#login-modal').modal('toggle');
 
-         rosterList = JSON.parse(xhttp.response);
-         addRosterFormOptions(rosterList);
-         getPlayers(rosterList[0]);
 
-
+         }
        }
-
        xhttp.onerror = function () {
        console.error("** An error occurred during the transaction",xhttp.response);
      };

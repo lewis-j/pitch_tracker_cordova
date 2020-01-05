@@ -23,7 +23,7 @@
   </div>
 
   <div class="container-fluid">
-    <div class="row" style="font-size:30px;cursor:pointer"><div id='menu-btn'>&#9776;</div><button id="logout" type="button" class="btn btn-default"><a href="logout.php">Logout</a></button></div>
+    <div class="row" style="font-size:30px;cursor:pointer"><div id='menu-btn'>&#9776;</div><button id="logout" type="button" class="btn btn-default">logout</button></div>
         <div class="row" id="header">
 
 
@@ -58,7 +58,7 @@
 </div>
 <div class="container-fluid" id="statTables">
 </div>
-
+<div id="modal-container" data-callback="getSeason"></div>
 
 
 
@@ -67,10 +67,13 @@
 
 
     <script src="../dependencies/jquery-3.3.1.js" ></script>
-    <!-- <script src="../dependencies/bs//bootstrap.min.js" ></script> -->
+    <script src="../dependencies/bs//bootstrap.min.js" ></script>
     <script src="../js/config.js"></script>
     <script src="../js/menu_btn_pitch_data.js"></script>
+    <script src='../js/login_modal.js'></script>
     <script src="../js/pitchData.js"></script>
+
+
 </body>
 
 </html>

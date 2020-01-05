@@ -1,5 +1,5 @@
 <?php
-include "./SQL_config.php";
+include "./SQLConnect.inc.php";
 
 class Teams {
 
@@ -34,9 +34,10 @@ public function __construct($id, $title, $year, $season){
         	array_push($arrayObject,$object );
 
         }
+          $obj->teamList = $arrayObject;
 
 
-       echo json_encode($arrayObject);
+       echo json_encode($obj);
 
 
 

@@ -1,8 +1,11 @@
 <?php
 if(!isset($_SESSION)) session_start();
 include "SQL_config.php";
+$obj = new StdClass;
 
-if($_SERVER['REQUEST_METHOD'] == "POST" && !isset($_SESSION['user_id'])){
+
+
+if($_SERVER['REQUEST_METHOD'] == "POST" && !isset($_SESSION['user_id']) && isset($_POST['username'])){
 try{
     $myQuery = "SELECT `id`
                 FROM `users`
@@ -13,7 +16,7 @@ try{
 
     $myStatment = $myconn -> prepare($myQuery);
 
-    $myStatment -> bind_param('ss',$username = $_POST['username'], $_POST['password']);
+    $myStatment -> bind_param('ss',$_POST['username'], $_POST['password']);
 
     $myStatment -> execute();
 
@@ -27,7 +30,7 @@ try{
     $myStatment -> close();
 }catch(Exception $e){
 
-      include "e_message.inc.php";
+    echo $e;
 }
 
 }
@@ -37,15 +40,15 @@ if( !isset($_SESSION['user_id'])){
     $myconn -> close();
 
     session_destroy();
-    $obj = new StdClass;
-    $obj->$loggedIn = false;
+
+    $obj->loggedIn = false;
 
     echo json_encode($obj);
 
     exit;
 
 }
-
+$obj->loggedIn = true;
 
 
 
