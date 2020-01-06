@@ -168,6 +168,10 @@ margin-left: 33px;
   padding-top: 20px;
 }
 
+#left-nav-menu.lnm-opened{
+  left:0px;
+}
+
 .left-menu-item {
     font-size: 18px;
     font-weight: bold;
@@ -185,16 +189,9 @@ margin-left: 33px;
 }
 
 #select-pitcher-screen{
-    height: 100%;
-    width: 0px;
-    position: fixed;
-    z-index: 11;
-    left: 172;
-    transition: 0.5s;
     background-image: url(../img/homeplate.jpg);
-    overflow-x: hidden;
     background-size: cover;
- background-repeat: no-repeat;
+   background-repeat: no-repeat;
 }
 
 #sync-roster{
@@ -202,16 +199,29 @@ margin-left: 33px;
   color:white;
 }
 
-.transfer-edit-screen{
-    height: 100%;
-    width: 0px;
-    position: fixed;
-    z-index: 11;
-    left: 172;
-    transition: 0.5s;
+#transfer-edit-screen{
     background-color: grey;
-    overflow-x: hidden;
 }
+
+.menu-page{
+  height: 100%;
+  width: 0px;
+  position: absolute;
+  z-index: 11;
+    left:17vw;
+  transition: 0.5s;
+  overflow-x: hidden;
+  }
+
+  .menu-page-open{
+
+    width:83vw;
+  }
+
+  .page-transition{
+    transition: .1s;
+    visibility: hidden;
+  }
 
 .full-open-menu{
   width: 100%;

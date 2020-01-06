@@ -1,10 +1,8 @@
-
-
 window.addEventListener('load', OnMenuReady, false);
 
 function OnMenuReady() {
- console.log("reading new pitch");
-	  document.getElementById("left-nav-menu").style.left = "-18vw";
+  console.log("reading new pitch");
+  document.getElementById("left-nav-menu").style.left = "-18vw";
 
   $('#menu-btn').click(function() {
 
@@ -15,8 +13,7 @@ function OnMenuReady() {
 
 
 
-    }
-    else {
+    } else {
 
       closeAllMenus();
     }
@@ -25,15 +22,15 @@ function OnMenuReady() {
 
   });
 
-  $('#edit-roster').click((e)=>{
-       window.location.href = "season_select_menu.html";
+  $('#edit-roster').click((e) => {
+    window.location.href = "season_select_menu.html";
   });
-	$('#cubs-pitch').click((e)=>{
-       window.location.href = "pitchData.html";
+  $('#cubs-pitch').click((e) => {
+    window.location.href = "pitchData.html";
   });
 
-    $('#pitch-tracker').click((e)=>{
-       window.location.href = "../index.html";
+  $('#pitch-tracker').click((e) => {
+    window.location.href = "../index.html";
   });
 
   function closeAllMenus() {
@@ -43,13 +40,13 @@ function OnMenuReady() {
   }
 
   function closeLeftMenu(event) {
-		var ele = document.getElementById("left-nav-menu");
+    var ele = document.getElementById("left-nav-menu");
     // event.preventDefault();
     // event.stopPropagation();
-    if( event.target !== ele && !ele.contains(event.target)){
-			console.log("event clicked");
-			 closeAllMenus()
-		}
+    if (event.target !== ele && !ele.contains(event.target)) {
+      console.log("event clicked");
+      closeAllMenus()
+    }
 
   }
 
