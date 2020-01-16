@@ -41,7 +41,12 @@ function inititalizeState() {
   ];
 
   //set dynamic style rules
-  $('.clear-header').css('top', $('#header-title').height());
+  // $('.clear-header').css('top', $('#header-title').height());
+  var headerHeight =  $('#header-title').height();
+document.querySelectorAll('.clear-header').forEach((ele, index)=>{
+              console.log("elements", headerHeight);
+              ele.style.setProperty('--header-height',headerHeight+"px");
+});
   scalePitchGraph();
   window.addEventListener('resize', () => {
     scalePitchGraph();
@@ -662,7 +667,7 @@ function inititalizeState() {
   });
 
   $('#pitcher-name').click((e) => {
-    document.getElementById("pitcher-name").classList.remove('ui_invalid');
+  $("#pitcher-name").removeClass('ui_invalid');
   });
 
   $('#game-type').change((e) => {
@@ -775,7 +780,7 @@ function inititalizeState() {
 
         clearCircles();
         loadPitchGame(e.target.parentNode.dataset.id);
-        closeAllMenus(document.getElementById('transfer-edit-screen'));
+        closeAllMenus($('#transfer-edit-screen'));
       });
 
 
@@ -989,20 +994,10 @@ function inititalizeState() {
 
   $('#confirm-local-upload').click((e) => {
 
-    document.getElementById('upload-btn').innerHTML = "Uploading Pitch Data <div class='loader'></div>";
-    transferPouchToSql().then((res) => {
+    uploadData();
 
-
-      document.getElementById('upload-btn').innerHTML = "Transfer Success";
-      document.getElementById('upload-btn').setAttribute("class", "btn btn-success");
-
-      setTimeout(() => {
-        window.open("./");
-      }, 3000);
-
-
-    });
   });
+
 
   $('#confirm-local-delete').click((e) => {
 
@@ -1086,6 +1081,7 @@ function inititalizeState() {
     $("#left-nav-menu").removeClass('lnm-opened');;
     if ($openMenu) {
       $openMenu.removeClass('menu-page-open');
+      $openMenu.removeClass('full-open-menu');
     }
 
     removeMenuListeners();
@@ -1186,6 +1182,23 @@ function scalePitchGraph() {
     $('#pitch-zone > svg').css('width', w);
     $('#pitch-zone > svg').css('margin-top', ($('#pitch-zone').height() - $('#pitch-zone > svg').height()) * .5);
   }
+}
+
+function uploadData(){
+  document.getElementById('upload-btn').innerHTML = "Uploading Pitch Data <div class='loader'></div>";
+  transferPouchToSql().then((res) => {
+
+
+    document.getElementById('upload-btn').innerHTML = "Transfer Success";
+    document.getElementById('upload-btn').setAttribute("class", "btn btn-success");
+
+    setTimeout(() => {
+      window.open("./");
+    }, 3000);
+
+
+  });
+
 }
 
 window.addEventListener('load', function() {

@@ -142,7 +142,7 @@ margin-left: 33px;
 
 .clear-header{
 
-  top: 45px;
+  top: var(--header-height);
 
 }
 

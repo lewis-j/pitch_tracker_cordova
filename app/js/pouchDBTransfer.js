@@ -204,19 +204,17 @@ function transferPouchToSql(){
   .then((res)=>{
     console.log(res.total_rows);
 
-    if(res.total_rows === 0){
-      pitchesDB.allDocs({include_docs: true}).then((res)=>{
-        console.log("returned docs: ", res);
-      });
-    }
-
       return res.rows.reduce((promise, docItem)=>{
         console.log("docitem",docItem.doc);
         return promise.then((res)=>{
            return storeData(docItem.doc);
 
         }).then((res)=>{
-
+          if(!res.loggedIn){
+            // $('#modal-container').attr('data-callback', 'transferPouchToSql');
+            $('#login-modal').modal('toggle');
+            fail("User login needed!");
+          }
           return pitchesDB.createIndex({
                       index: {
                       fields: ['pitcher_id']
@@ -233,7 +231,7 @@ function transferPouchToSql(){
                      });
                 }).then((res)=>{
                   console.log("item for bulkStoreData:", res.docs);
-           return bulkStoreData(res.docs).then((res)=>{
+           return bulkStoreData(res.docs, ).then((res)=>{
              console.log("response from bulk store:", res);
            });
         });

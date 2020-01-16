@@ -1,9 +1,6 @@
 $(function(){
-      $("#modal-container").load("../includes/login_modal.html",()=>{
-        var callback = $('#modal-container').attr('data-callback');
-        
-
-              $('#login-form').submit((e)=>{
+     var callback = $('#modal-container').attr('data-callback');
+      $('#login-form').submit((e)=>{
           console.log("form submitted");
                 var params = `username=${$('#userName').val()}&password=${$('#password').val()}&login=true`;
 
@@ -28,7 +25,6 @@ $(function(){
     e.preventDefault();
               });
 
-      });
 
       $('#logout').click(()=>{
          var xhttp = new XMLHttpRequest();

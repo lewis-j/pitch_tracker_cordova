@@ -1,5 +1,5 @@
 <?php
-include "./SQL_config.php";
+include "./SQLConnect.inc.php";
 $request = file_get_contents("php://input");
 $object = json_decode($request);
 
@@ -47,7 +47,7 @@ $objType = $object->objType;
         // or do I choose to handle this differently?
         // header "Location: error.html";
     }
-      echo json_encode($object); 
+      echo json_encode($object);
 	 }
 
 

@@ -406,6 +406,35 @@
           </div>
       </div>
   </div>
+
+<div id="modal-container" data-callback="uploadData">
+  <div class="modal" tabindex="-1" role="dialog" id="login-modal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Login to access feature</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="login-form">
+    <div class="form-group">
+      <label for="userName">Username</label>
+      <input type="text" class="form-control" id="userName" placeholder="Enter email" name="username">
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" class="form-control" id="password" placeholder="Password" name="password">
+    </div>
+    <button id="login-submit" type="submit" class="btn btn-primary">Submit</button>
+  </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
     <script src="./js/config.js"></script>
     <script src="https://kit.fontawesome.com/81ea6c8bc9.js" crossorigin="anonymous"></script>
     <script src="dependencies/jquery-3.3.1.js"></script>
@@ -415,6 +444,7 @@
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script type="text/javascript" src="js/xmlCalls.js"></script>
     <script type="text/javascript" src="js/pouchDBTransfer.js"></script>
+    <script type="text/javascript" src='js/login_modal_index.js'></script>
     <script type="text/javascript" src="js/index.js"></script>
 </body>
 

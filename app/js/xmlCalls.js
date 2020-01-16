@@ -32,11 +32,12 @@ xhttp.onreadystatechange = function() {
 			if(this.status === 200) {
       console.log("xhttp Response:", xhttp.response);
       var obj = JSON.parse(xhttp.response);
-       resolve(obj);
-	 }else{
+				resolve(obj);
+
+	 } else{
 		    reject({
-					 status: xhr.status,
-					 statusText: xhr.statusText
+					 status: xhttp.status,
+					 statusText: xhttp.statusText
 				 });
 	 }
  }
