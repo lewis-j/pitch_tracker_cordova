@@ -32,7 +32,7 @@ function OnMenuReady() {
        window.location.href = "season_select_menu.html";
   });
 	$('#cubs-pitch').click((e)=>{
-       window.location.href = "pitchData.html";
+       window.location.href = "pitch_data.html";
   });
 
     $('#pitch-tracker').click((e)=>{

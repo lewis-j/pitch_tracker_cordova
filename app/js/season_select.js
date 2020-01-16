@@ -3,6 +3,8 @@ window.addEventListener('load', OnDeviceReady, false);
 function OnDeviceReady(){
 var yearSelectInit = false;
 
+fetchList();
+
 document.getElementById('edit-add-season').style.display = "none";
 
 $('#add-season').on('click',()=>{
@@ -93,8 +95,10 @@ function fetchList(){
 xhrPost(null, url + "get_team_list.php", (res)=>{
   console.log("callback response::", res);
  if(res.loggedIn){
+   console.log('logged in');
    listToView(res.teamList);
  }else{
+   console.log('modal on');
    $('#login-modal').modal('toggle');
  }
 
@@ -186,7 +190,10 @@ function getSeasonInfo(e){
 
     var item = new Object();
     var obj = JSON.parse(target.dataset.item);
-     item._id = obj.team_id;
+    console.log('getting season list', obj);
+     item._id = obj._id;
+
+
 
 
 
@@ -210,6 +217,8 @@ function getSeasonInfo(e){
     htmlString += `<tr><td ><div class='player-view' data-item=${JSON.stringify({id: player._id, team_id: player.team_id })}  data-viewindex='${JSON.stringify({seasonIndex: target.dataset.viewindex, playerIndex: index})}' ><div class='player-name'>${player.pitcher_name}</div><button type='button' class='btn delete-player' data-toggle='modal' data-target='.player-delete-modal'><i class="fas fa-trash-alt"></i></button><button type='button' class='btn  edit-player'><i class="fas fa-edit"></i></button></div></td>
 
                         </tr>`;
+
+
 
    });
 

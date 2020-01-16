@@ -1,9 +1,33 @@
 $(function(){
-      $("#modal-container").load("../includes/login_modal.html",()=>{
-        var callback = $('#modal-container').attr('data-callback');
-        
 
-              $('#login-form').submit((e)=>{
+  $('#modal-container').append(`<div class="modal" tabindex="-1" role="dialog" id="login-modal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Login to access feature</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="login-form">
+    <div class="form-group">
+      <label for="userName">Username</label>
+      <input type="text" class="form-control" id="userName" placeholder="Enter email" name="username">
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" class="form-control" id="password" placeholder="Password" name="password">
+    </div>
+    <button id="login-submit" type="submit" class="btn btn-primary">Submit</button>
+  </form>
+        </div>
+      </div>
+    </div>
+  </div>
+`);
+     var callback = $('#modal-container').attr('data-callback');
+      $('#login-form').submit((e)=>{
           console.log("form submitted");
                 var params = `username=${$('#userName').val()}&password=${$('#password').val()}&login=true`;
 
@@ -28,7 +52,6 @@ $(function(){
     e.preventDefault();
               });
 
-      });
 
       $('#logout').click(()=>{
          var xhttp = new XMLHttpRequest();

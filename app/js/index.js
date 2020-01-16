@@ -41,7 +41,6 @@ function inititalizeState() {
   ];
 
   //set dynamic style rules
-  // $('.clear-header').css('top', $('#header-title').height());
   var headerHeight =  $('#header-title').height();
 document.querySelectorAll('.clear-header').forEach((ele, index)=>{
               console.log("elements", headerHeight);
@@ -577,7 +576,7 @@ document.querySelectorAll('.clear-header').forEach((ele, index)=>{
 
   $('#database-btn').click(() => {
 
-    window.location.href = "links/pitchData.html";
+    window.location.href = "links/pitch_data.html";
   });
 
 
