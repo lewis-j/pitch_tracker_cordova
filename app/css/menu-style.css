@@ -160,7 +160,7 @@ margin-left: 33px;
   height: 100%;
   width: 17vw;
   position: absolute;
-  z-index: 6;
+  z-index: 15;
   left: -17vw;
   transition: 0.5s;
   background-color: #a8a8a8;
@@ -201,32 +201,33 @@ margin-left: 33px;
 
 #transfer-edit-screen{
     background-color: grey;
-
+    overflow-x: hidden;
 }
 
 .menu-page{
   height: 100%;
-  width: 0px;
+  width:83vw;
   position: absolute;
   z-index: 11;
-    left:17vw;
+  left:17vw;
   transition: 0.5s;
+  transform: translateX(-100vw);
   overflow-x: hidden;
   }
 
   .menu-page-open{
 
-    width:83vw;
+    transform: translateX(0);
   }
 
   @-webkit-keyframes close-window {
-    from {width: 83vw; opacity: 1; }
-    to {width: 0; opacity: 0; }
+    from {   transform:translateX(0); }
+    to {    transform:translateX(-100vw); }
   }
 
   @keyframes close-window {
-    from {width: 83vw; opacity: 1; }
-    to {width: 0; opacity: 0; }
+    from {   transform:translateX(0); }
+    to {    transform:translateX(-100vw); }
 }
 
   .page-transition{
@@ -238,6 +239,7 @@ margin-left: 33px;
   width: 100%;
   left:0px;
   top:0px;
+  transform: translateX(0);
 }
 
 .close-btn {

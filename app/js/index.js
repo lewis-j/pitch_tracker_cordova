@@ -1103,8 +1103,8 @@ function animstart(obj){
 
 
 function closeAnimation($ele){
-  $ele.css('animation','close-window 1s forwards');
-  $ele.css('-webkit-animation','close-window 1s forwards');
+  $ele.css('animation','close-window .5s forwards');
+  $ele.css('-webkit-animation','close-window .5s forwards');
 
 }
 function unsetAnimation($ele){
