@@ -1018,7 +1018,7 @@ document.querySelectorAll('.clear-header').forEach((ele, index)=>{
   }
 
   $('#view-data').click(() => {
-    window.open("links/pitchData.html");
+    window.open("links/pitch_data.html","_self");
   });
 
   $('#enter-new-pitcher').click(() => {
@@ -1076,18 +1076,44 @@ document.querySelectorAll('.clear-header').forEach((ele, index)=>{
 
   });
 
+
   function closeAllMenus($openMenu) {
-    $("#left-nav-menu").removeClass('lnm-opened');;
-    if ($openMenu) {
-      $openMenu.removeClass('menu-page-open');
-      $openMenu.removeClass('full-open-menu');
-    }
+  $openMenu.bind("animationend webkitAnimationEnd oAnimationEnd MSAnimationEnd", animEnd);
+  $openMenu.bind("animationstart webkitAnimationStart oanimationstart  msAnimationStart ", animstart);
+  closeAnimation($openMenu);
+
+    console.log("in closeAllMenus" , $openMenu);
 
     removeMenuListeners();
 
-
   }
 
+function animEnd(obj){
+  console.log("ended animation", obj.target.style);
+    unsetAnimation($(obj.target));
+    $("#left-nav-menu").removeClass('lnm-opened');
+    $(obj.target).removeClass('menu-page-open');
+    $(obj.target).removeClass('full-open-menu');
+
+}
+
+function animstart(obj){
+  console.log("started animation", $(obj.target));
+}
+
+
+function closeAnimation($ele){
+  $ele.css('animation','close-window 1s forwards');
+  $ele.css('-webkit-animation','close-window 1s forwards');
+
+}
+function unsetAnimation($ele){
+  console.log("unsetting animation", $ele);
+  $ele.css('animation','');
+  $ele.css('-webkit-animation','');
+
+
+}
   function checkForClose(event) {
     var elements = [document.getElementById("left-nav-menu"), document.getElementById("transfer-edit-screen"),
       document.getElementById('select-pitcher-screen')

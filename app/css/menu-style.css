@@ -201,6 +201,7 @@ margin-left: 33px;
 
 #transfer-edit-screen{
     background-color: grey;
+
 }
 
 .menu-page{
@@ -217,6 +218,16 @@ margin-left: 33px;
 
     width:83vw;
   }
+
+  @-webkit-keyframes close-window {
+    from {width: 83vw; opacity: 1; }
+    to {width: 0; opacity: 0; }
+  }
+
+  @keyframes close-window {
+    from {width: 83vw; opacity: 1; }
+    to {width: 0; opacity: 0; }
+}
 
   .page-transition{
     transition: .1s;
