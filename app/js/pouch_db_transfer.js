@@ -32,7 +32,8 @@ return new Promise ((response,rej)=>{
   .then((res) => {
     return getRosterList();
   }).then((obj)=> {
-      return rostlistDB.bulkDocs(obj);
+    console.log("before bulkDocs call:", obj.teamList);
+      return rostlistDB.bulkDocs(obj.teamList);
 
   }).then((res)=>{
     return rostlistDB.allDocs({include_docs: true, descending:true});

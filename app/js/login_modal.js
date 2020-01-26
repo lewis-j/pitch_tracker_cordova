@@ -20,6 +20,7 @@ $(function(){
       <input type="password" class="form-control" id="password" placeholder="Password" name="password">
     </div>
     <button id="login-submit" type="submit" class="btn btn-primary">Submit</button>
+    <p>Don't have an account?<a href="../../php/register.php">Sign up</a></p>
   </form>
         </div>
       </div>

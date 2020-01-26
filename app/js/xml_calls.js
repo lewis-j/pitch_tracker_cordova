@@ -1,22 +1,22 @@
 function storeData(PlayerData) {
-
+console.log("storeData");
 	return xhrPost(PlayerData, "store_player_data.php");
 
 }
 
 function bulkStoreData(pitchesData) {
-
+console.log("bulkStoreData");
 	return xhrPost(pitchesData, "store_pitch_data.php");
 
 }
 
 function getRosterList(){
-
+console.log("getRosterList");
 			return xhrPost(null, "get_team_list.php");
 }
 
 function getRoster(){
-
+console.log("getRoster");
 			 return xhrPost(null, "get_team.php");
 }
 

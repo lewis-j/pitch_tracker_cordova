@@ -2,7 +2,7 @@
  header("Access-Control-Allow-Origin: *");
   header("Content-Type", "application/json");
 //phpmyadmin connection
-$mydbserver = 'localhost';
+$mydbserver = 'localhost:3307';
 $mydbname = 'baseball_app';
 $mydbuser = 'root';
 $mydbpass = 'root';
