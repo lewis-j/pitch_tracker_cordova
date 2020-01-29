@@ -468,6 +468,7 @@ document.querySelectorAll('.clear-header').forEach((ele, index)=>{
     });
 
   }).catch((err) => {
+    console.log("login test", err);
     console.error(err)
   });
 
@@ -655,7 +656,19 @@ document.querySelectorAll('.clear-header').forEach((ele, index)=>{
       });
 
     }).catch((err) => {
-      console.error(err)
+
+
+      //the json is ok
+      if(jsonChecker(err)){
+        loginCheck(err,'syncRoster');
+      }else{
+          console.error(err);
+      }
+
+
+
+
+
     });
   });
 
@@ -1223,6 +1236,28 @@ function uploadData(){
 
 
   });
+
+}
+
+function jsonChecker(err){
+
+  return (/^[\],:{}\s]*$/.test(err.replace(/\\["\\\/bfnrtu]/g, '@').
+replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').
+replace(/(?:^|:|,)(?:\s*\[)+/g, '')));
+
+}
+
+function loginCheck(err, functionName){
+  var errorObj = JSON.parse(err);
+  if(!errorObj.loggedIn){
+
+     //send function name as attr
+        $('#modal-container').attr('data-callback',functionName);
+      //open login Modal
+         $('#login-modal').modal();
+  }else{
+    console.err(err);
+  }
 
 }
 

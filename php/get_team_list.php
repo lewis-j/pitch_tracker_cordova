@@ -34,10 +34,10 @@ public function __construct($id, $title, $year, $season){
         	array_push($arrayObject,$object );
 
         }
-          $obj->teamList = $arrayObject;
+          $responseObj->teamList = $arrayObject;
 
 
-       echo json_encode($obj);
+       echo json_encode($responseObj);
 
 
 

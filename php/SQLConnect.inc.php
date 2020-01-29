@@ -1,7 +1,7 @@
 <?php
 if(!isset($_SESSION)) session_start();
 include "SQL_config.php";
-$obj = new StdClass;
+$responseObj = new StdClass;
 
 
 
@@ -41,14 +41,14 @@ if( !isset($_SESSION['user_id'])){
 
     session_destroy();
 
-    $obj->loggedIn = false;
+    $responseObj->loggedIn = false;
 
-    echo json_encode($obj);
+    echo json_encode($responseObj);
 
     exit;
 
 }
-$obj->loggedIn = true;
+$responseObj->loggedIn = true;
 
 
 

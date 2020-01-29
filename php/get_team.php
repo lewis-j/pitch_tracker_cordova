@@ -1,5 +1,5 @@
 <?php
-include "./SQL_config.php";
+include "./SQLConnect.inc.php";
 
 class pitcher {
 
@@ -45,8 +45,8 @@ class pitcher {
 
         }
 
-
-       echo json_encode($arrayObject);
+             $responseObj->teamList = $arrayObject;
+       echo json_encode($responseObj);
 
 
 

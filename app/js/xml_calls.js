@@ -32,7 +32,13 @@ xhttp.onreadystatechange = function() {
 			if(this.status === 200) {
       console.log("xhttp Response:", xhttp.response);
       var obj = JSON.parse(xhttp.response);
+			console.log('response object', obj);
+			if(obj.loggedIn){
 				resolve(obj);
+			}else{
+				reject(JSON.stringify({ loggedIn: false}));
+			}
+
 
 	 } else{
 		    reject({

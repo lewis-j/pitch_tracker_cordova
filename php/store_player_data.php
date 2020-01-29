@@ -47,7 +47,7 @@ $objType = $object->objType;
         // or do I choose to handle this differently?
         // header "Location: error.html";
     }
-      echo json_encode($object);
+      echo json_encode($responseObj);
 	 }
 
 

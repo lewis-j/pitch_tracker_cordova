@@ -45,7 +45,7 @@ $_id = NULL;
 			}
 
 			$pitchStatement ->close();
-     echo json_encode($object); 
+     echo json_encode($responseObj); 
 
     }else{
    $statement -> close();
