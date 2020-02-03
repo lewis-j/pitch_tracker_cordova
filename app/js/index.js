@@ -600,7 +600,7 @@ document.querySelectorAll('.clear-header').forEach((ele, index)=>{
             valid = false;
           }
         } else {
-          PlayerData.opponent = "SRJC";
+          PlayerData.opponent =  $('#game-type').val();
           PlayerData.gameNum = "1";
         }
 

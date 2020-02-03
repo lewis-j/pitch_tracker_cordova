@@ -1,0 +1,9 @@
+#sign-up:hover{
+cursor: pointer;
+color: #007bff;
+}
+
+#role{
+  width:100%;
+  margin: 0px;
+}
