@@ -628,49 +628,7 @@ document.querySelectorAll('.clear-header').forEach((ele, index)=>{
 
   });
 
-  $('#sync-roster').click(() => {
-
-    syncRoster().then((rosterList) => {
-
-
-      $('#roster-list').empty();
-      rosterList.forEach((item, index) => {
-        item = item.doc;
-
-        if (rosterList.length - 1 == index) {
-          $('#roster-list').append("<option selected data-id=" + item._id + ">" + item.year + " " + item.season + " " + item.title + "</option");
-          rosterIndex = parseInt(item._id);
-        } else {
-          $('#roster-list').append("<option data-id=" + item._id + ">" + item.year + " " + item.season + " " + item.title + "</option");
-        }
-      });
-
-      return getPouchRoster(1);
-
-    }).then((res) => {
-      pitchersData = res;
-      $('#pitcher-name').empty();
-      $('#pitcher-name').append("<option selected disabled value='unselected'><i>Select Pitcher</i></option>");
-      res.forEach((item) => {
-        $('#pitcher-name').append("<option data-id=" + item._id + ">" + item.pitcher_name + "</option");
-      });
-
-    }).catch((err) => {
-
-
-      //the json is ok
-      if(jsonChecker(err)){
-        loginCheck(err,'syncRoster');
-      }else{
-          console.error(err);
-      }
-
-
-
-
-
-    });
-  });
+  $('#sync-roster').click(fetchRosterList);
 
 
   $('#pitcher-name').change((e) => {
@@ -714,6 +672,50 @@ document.querySelectorAll('.clear-header').forEach((ele, index)=>{
     loadPouchPitchMenu();
     // loadPitchGame();
   });
+
+  function fetchRosterList(){
+    syncRoster().then((rosterList) => {
+
+
+      $('#roster-list').empty();
+      rosterList.forEach((item, index) => {
+        item = item.doc;
+
+        if (rosterList.length - 1 == index) {
+          $('#roster-list').append("<option selected data-id=" + item._id + ">" + item.year + " " + item.season + " " + item.title + "</option");
+          rosterIndex = parseInt(item._id);
+        } else {
+          $('#roster-list').append("<option data-id=" + item._id + ">" + item.year + " " + item.season + " " + item.title + "</option");
+        }
+      });
+
+      return getPouchRoster(1);
+
+    }).then((res) => {
+      pitchersData = res;
+      $('#pitcher-name').empty();
+      $('#pitcher-name').append("<option selected disabled value='unselected'><i>Select Pitcher</i></option>");
+      res.forEach((item) => {
+        $('#pitcher-name').append("<option data-id=" + item._id + ">" + item.pitcher_name + "</option");
+      });
+
+    }).catch((err) => {
+
+
+      //the json is ok
+      if(jsonChecker(err)){
+        loginCheck(err,'fetchRosterList');
+      }else{
+          console.error(err);
+      }
+
+
+
+
+
+    });
+
+  }
 
   function loadPitchGame(id) {
     var tempPitcher;

@@ -63,7 +63,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && !isset($_SESSION['user_id']) && isset
 
  try{
       $sql = "INSERT INTO `users` (`username`, `email`, `role`, `verified`, `token`, `password`) VALUES (?, ?, ?, ?, ?, ?)";
-$verified = 0;
+      $verified = 0;
        $errors['testing'] = $verified;
       $stmt = $myconn->prepare($sql);
       $stmt->bind_param('sssiss', $username, $email, $role, $verified, $token, $password);
@@ -116,7 +116,7 @@ if(isset($_POST['login-submit'])){
 
       if($stmt->fetch()){
         if(password_verify($password, $pass)){
-          $_SESSION['id'] = $id;
+          $_SESSION['user_id'] = $id;
           $_SESSION['username'] = $user;
           $_SESSION['email'] = $email;
 
@@ -125,8 +125,13 @@ if(isset($_POST['login-submit'])){
            //flash MessageFormatter
            $_SESSION['message'] = "you are now logged in!";
            $_SESSION['alert-class'] = "alert-success";
-           // header('location: ../app/index.php');
-           exit();
+           
+           $responseObj->errors = $errors;
+            $responseObj->loggedIn = true;
+
+            echo json_encode($responseObj);
+
+            exit();
         }else{
           $errors['login_fail'] = "Wrong Credentials";
         }
@@ -153,7 +158,7 @@ if( !isset($_SESSION['user_id'])){
 
     echo json_encode($responseObj);
 
-    exit;
+    exit();
 
 }
 $responseObj->loggedIn = true;

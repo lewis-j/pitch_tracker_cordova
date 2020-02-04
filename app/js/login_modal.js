@@ -69,16 +69,17 @@ $('#modal-container').append(`<div class="modal" tabindex="-1" role="dialog" id=
   </div>
 </div>
 `);
-     var callback = $('#modal-container').attr('data-callback');
+
       $('#login-form').submit((e)=>{
-          console.log("form submitted");
+        var callback = $('#modal-container').attr('data-callback');
+          console.log("form submitted", callback);
                 var params = `username=${$('#userName').val()}&password=${$('#password').val()}&login-submit=submit`;
 
                 console.log('params',params);
                 var xhttp = new XMLHttpRequest();
                 xhttp.onreadystatechange = function() {
                     if (this.readyState == 4 && this.status == 200) {
-                      console.log("login response",JSON.parse(xhttp.response));
+                      console.log("login response",xhttp.response);
 
                       var obj = JSON.parse(xhttp.response);
                       console.log("length of errors:",Object.entries(obj.errors).length );

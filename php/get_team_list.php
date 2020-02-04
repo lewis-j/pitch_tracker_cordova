@@ -13,15 +13,17 @@ public function __construct($id, $title, $year, $season){
 }
 
 
-
+$user_id = $_SESSION['user_id'];
 
 	 try{
 
         $allData = "SELECT `team_id`,`title`,`year`,`season`
-        FROM `srjc_team_list` ORDER BY `year` ASC";
+        FROM `srjc_team_list` where `user_id` = ?";
 
         $statement = $myconn -> prepare($allData);
         $arrayObject = array();
+
+        $statement->bind_param('i',$user_id);
 
         $statement -> execute();
 
@@ -34,6 +36,7 @@ public function __construct($id, $title, $year, $season){
         	array_push($arrayObject,$object );
 
         }
+          $responseObj->user_id = $user_id;
           $responseObj->teamList = $arrayObject;
 
 
