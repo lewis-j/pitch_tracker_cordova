@@ -1,8 +1,8 @@
 
 
-window.addEventListener('load', OnMenuReady, false);
 
-function OnMenuReady() {
+
+function initMenuUI() {
 
 	  document.getElementById("left-nav-menu").style.left = "-18vw";
 
@@ -29,7 +29,7 @@ function OnMenuReady() {
   });
 
   $('#edit-roster').click((e)=>{
-       window.location.href = "season_select_menu.html";
+       window.location.href = "roster_edit.html";
   });
 	$('#cubs-pitch').click((e)=>{
        window.location.href = "pitch_data.html";
@@ -60,3 +60,5 @@ function OnMenuReady() {
 
 
 }
+
+window.addEventListener('load', initMenuUI, false);

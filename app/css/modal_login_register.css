@@ -7,3 +7,40 @@ color: #007bff;
   width:100%;
   margin: 0px;
 }
+
+.start-user-btn {
+    position: absolute;
+    right: -33px;
+    top: -33px;
+    background-color: black;
+    border: none;
+}
+.start-user-btn:hover {
+      border: 1px solid transparent;
+      border-color: #6c757d;
+}
+
+
+.start-user-menu{
+  background-color: #000;
+  color:#fff;
+}
+
+.user-btn {
+    position: absolute;
+    right: 8px;
+    top: 5px;
+    background-color: #a80311;
+    border: none;
+}
+.user-btn:hover {
+      border: 1px solid transparent;
+      border-color: #6c757d;
+}
+
+
+
+.user-menu{
+  background-color: #000;
+  color:#fff;
+}

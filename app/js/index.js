@@ -1,4 +1,4 @@
-function inititalizeState() {
+function initIndex() {
   //colors for pitch radio buttons and cirlce elements
   // [FASTBALL, CHANGEUP, SLIDER, CURVEBALL, OTHER ]
   const pitchColors = ["red", "blue", "green", "purple", "orange"];
@@ -1072,22 +1072,35 @@ document.querySelectorAll('.clear-header').forEach((ele, index)=>{
     }
   }
 
-  $('#menu-btn').click(function() {
+  function openMenu() {
+    lnm = document.getElementById('left-nav-menu');
+    lnm.classList.add('lnm-opened');
+    document.addEventListener("click", checkForClose, true);
+    console.log("openeing left nav");
+    $(this).addClass('open');
+    $(this).one("click", closeMenu);
+}
+function closeMenu() {
+  console.log("closing left nav");
 
-    if (!$("#left-nav-menu").hasClass('lnm-opened')) {
-      $("#left-nav-menu").addClass('lnm-opened');
-      document.addEventListener("click", checkForClose, true);
+  closeAllMenus($('.menu-page-open'));
+    $(this).removeClass('open');
+    $(this).one("click", openMenu);
+}
+$("#menu-btn").one("click", openMenu);
 
-    } else {
 
-      closeAllMenus($('.menu-page-open'));
-    }
 
-  });
+
+
+
+
+
 
   $(".close-btn").click(function(e) {
 
     closeAllMenus($(e.target.parentNode));
+  $('#menu-btn').removeClass('open').one("click", openMenu);
 
   });
 
@@ -1099,8 +1112,7 @@ document.querySelectorAll('.clear-header').forEach((ele, index)=>{
 
     console.log("in closeAllMenus" , $openMenu);
 
-    removeMenuListeners();
-
+       removeMenuListeners();
   }
 
 function animEnd(obj){
@@ -1146,8 +1158,10 @@ function unsetAnimation($ele){
     }, 0);
 
 
+
+
     if (!clickedMenuItem) {
-      closeAllMenus(null);
+    $("#left-nav-menu").removeClass('lnm-opened');
     }
 
 
@@ -1264,5 +1278,5 @@ function loginCheck(err, functionName){
 }
 
 window.addEventListener('load', function() {
-  inititalizeState();
+  initIndex();
 }, false);

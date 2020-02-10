@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="msapplication-tap-highlight" content="no" />
+  <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+    <!-- This is a wide open CSP declaration. To lock this down for production, see below. -->
+    <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' http://* 'unsafe-inline'; script-src 'self' http://* 'unsafe-inline' 'unsafe-eval'" />
+    <link rel="stylesheet" href="../dependencies/bs/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/header.css">
+    <link rel="stylesheet" href="../css/menu_style_2.css">
+    <link rel="stylesheet" href="../css/rosterEdit/style.css">
+    <link rel="stylesheet" href="../css/rosterEdit/roster_edit.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <title>Select Season</title>
+</head>
+
+<body>
+
+  <div id="left-nav-menu" class="clear-header">
+    <div class="left-menu-item" id="cubs-pitch">Cubs Pitch Data<i class="fas fa-baseball-ball"></i></div>
+    <div class="left-menu-item" id="pitch-tracker">Pitch Tracker<i class="fas fa-baseball-ball"></i></div>
+</div>
+
+  <div class="container-fluid">
+    <div class="row" style="font-size:30px;cursor:pointer"><div id='menu-btn'>&#9776;</div>  <div class="dropdown">
+<button class="btn btn-secondary dropdown-toggle user-btn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+<i class="fas fa-user"></i>
+</button>
+<div class="dropdown-menu user-menu" aria-labelledby="dropdownMenuButton">
+  <a class="dropdown-item login-btn">Log in</a>
+  <a class="dropdown-item signup-btn">Sign up</a>
+  <div class="dropdown-divider"></div>
+  <a class="dropdown-item signout-btn">Sign out</a>
+</div>
+</div></div>
+        <div class="row" id="header">
+
+
+            <div class="col-md-12 header-title">
+
+              <div class="main-header"><img id="header-logo" src="../img/bearcubs.png" alt="Santa Rosa Bear Cubs Logo">Santa Rosa Jr College</div>
+             <p>Roster Editor</p></div></div></div>
+            <div class="container">
+              <div class="row">
+            <div id="add-season" class='col-md-12 '><i class="fas fa-plus"></i> Add New Season</div>
+            <div id="edit-add-season" class='col-md-12 season-item' ><form class="form-inline">
+              <div class="form-group mb-2">
+                <label for="inputTitle" class="sr-only">Season title</label>
+                <input type="text" class="form-control" id="input-title" placeholder='title'/>
+              </div>
+                      <div class="form-group mx-sm-3 mb-2">
+                        <label for="select-season" class="sr-only">season</label>
+                        <select class="form-control" id="select-season">
+                      <option>Fall</option>
+                      <option>Spring</option>
+                    </select>
+                      </div>
+                      <div class="form-group  mb-2">
+                        <label for="year-select" class="sr-only">year</label>
+                        <select class="form-control" id="year-select">
+                        </select>
+                      </div>
+                      <button type="button" class="btn btn-primary mx-sm-3 mb-2 enter-changes" id="confirm-add-season" data-id='0'><i class="fas fa-check-circle"></i></button>
+                      <button type="button" class="btn btn-secondary mb-2 back-edit" id="cancel-season"><i class="fas fa-undo"></i></button>
+                    </form></div>
+            <div id="seasons-list"></div>
+
+
+          </div>
+            </div>
+
+
+
+
+          <div class='modal season-delete-modal' id="delete-modal" tabindex='-1' role='dialog'>
+  <div class='modal-dialog' role='document'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+        <h5 class='modal-title'>Delete Season</h5>
+        <button type='button' class='close' data-dismiss='modal' aria-label='Close'>
+          <span aria-hidden='true'>&times;</span>
+        </button>
+      </div>
+      <div class='modal-body' id="delete-modal-body">
+
+      </div>
+      <div class='modal-footer'>
+        <button type='button' class='btn btn-danger' id="confirm-delete-season">Comfirm Delete</button>
+        <button type='button' class='btn btn-secondary' data-dismiss='modal'>Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class='modal player-delete-modal' id="player-delete-modal" tabindex='-1' role='dialog'>
+<div class='modal-dialog' role='document'>
+<div class='modal-content'>
+<div class='modal-header'>
+<h5 class='modal-title'>Delete Player</h5>
+<button type='button' class='close' data-dismiss='modal' aria-label='Close'>
+<span aria-hidden='true'>&times;</span>
+</button>
+</div>
+<div class='modal-body' id="player-delete-modal-body">
+
+</div>
+<div class='modal-footer'>
+<button type='button' class='btn btn-danger' id="confirm-delete-player">Comfirm Delete</button>
+<button type='button' class='btn btn-secondary' data-dismiss='modal'>Close</button>
+</div>
+</div>
+</div>
+</div>
+
+<div id="modal-container" data-callback="fetchList"></div>
+        </body>
+        <script src="../js/config.js"></script>
+        <script src="../dependencies/jquery-3.3.1.js" ></script>
+        <script src="../dependencies/bs//bootstrap.bundle.min.js" ></script>
+        <script src="../js/menu_btn_pitch_data.js"></script>
+        <script src='../js/login_modal.js'></script>
+        <script src='../js/user_interactions.js'></script>
+        <script type="text/javascript" src="../js/roster_edit.js">
+
+        </script>
+</html>

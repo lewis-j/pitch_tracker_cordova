@@ -1,6 +1,6 @@
-window.addEventListener('load', OnMenuReady, false);
+window.addEventListener('load', initMenu, false);
 
-function OnMenuReady() {
+function initMenu() {
   console.log("reading new pitch");
   document.getElementById("left-nav-menu").style.left = "-18vw";
 
@@ -23,7 +23,7 @@ function OnMenuReady() {
   });
 
   $('#edit-roster').click((e) => {
-    window.location.href = "season_select_menu.html";
+    window.location.href = "roster_edit.html";
   });
   $('#cubs-pitch').click((e) => {
     window.location.href = "pitch_data.html";

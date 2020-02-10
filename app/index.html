@@ -78,13 +78,14 @@
       </div>
       <div id="opening-menu">
         <div class="dropdown">
-  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    Dropdown button
+  <button class="btn btn-secondary dropdown-toggle start-user-btn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+  <i class="fas fa-user"></i>
   </button>
-  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-    <a class="dropdown-item" href="#">Action</a>
-    <a class="dropdown-item" href="#">Another action</a>
-    <a class="dropdown-item" href="#">Something else here</a>
+  <div class="dropdown-menu start-user-menu" aria-labelledby="dropdownMenuButton">
+    <a class="dropdown-item login-btn">Log in</a>
+    <a class="dropdown-item signup-btn">Sign up</a>
+    <div class="dropdown-divider"></div>
+    <a class="dropdown-item signout-btn">Sign out</a>
   </div>
 </div>
         <img id="logo"  src="./img/bearcubs.png" alt="Santa Rosa Bear Cubs Logo">
@@ -181,12 +182,30 @@
 
   <div class="container-fluid" id="app-wrapper">
 
-    <div class="row" id="header-title" style="font-size:30px;cursor:pointer"><div id='menu-btn'>&#9776;</div><div id="app-title">SRJC Pitch Tracker</div><div id='fullscreen'><i class="fas fa-expand"></i></div></div>
+    <div class="row" id="header-title" style="font-size:30px;cursor:pointer"><div id='menu-btn'>
+  <span></span>
+  <span></span>
+  <span></span>
+  <span></span>
+</div><div id="app-title">SRJC Pitch Tracker</div>
+
+<div class="dropdown">
+<button class="btn btn-secondary dropdown-toggle user-btn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+<i class="fas fa-user"></i>
+</button>
+<div class="dropdown-menu user-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+  <a class="dropdown-item login-btn">Log in</a>
+  <a class="dropdown-item signup-btn">Sign up</a>
+  <div class="dropdown-divider"></div>
+  <a class="dropdown-item signout-btn">Sign out</a>
+</div>
+</div>
+</div>
          <div class="row">
 
   <!--Left Panel Game information display   -->
           <div class="col-sm-2 left-panel">
-              <div class="bearcub-logo" onclick="alert('Please Login to Begin a Game')"><img src="img/bearcubs.png" width="111px" height="90px" >
+              <div class="bearcub-logo"><img src="img/bearcubs.png" width="111px" height="90px" >
               </div>
               <div id="session-game">
               <div class="session-item"><div id="date">
@@ -424,15 +443,14 @@
     <script src="./js/config.js"></script>
     <script src="https://kit.fontawesome.com/81ea6c8bc9.js" crossorigin="anonymous"></script>
     <script src="dependencies/jquery-3.3.1.js"></script>
-    <script src="dependencies/bootstrap-4.0.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- <script src="https://unpkg.com/@popperjs/core@2"></script>
-    <script src="dependencies/bs/bootstrap.min.js"></script> -->
+    <script src="dependencies/bs/bootstrap.bundle.min.js"></script>
     <script src="dependencies/pouch/pouchdb-7.0.0.min.js"></script>
     <script src="dependencies/pouch/pouchdb.find.js"></script>
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script type="text/javascript" src="js/xml_calls.js"></script>
     <script type="text/javascript" src="js/pouch_db_transfer.js"></script>
     <script type="text/javascript" src='js/login_modal.js'></script>
+    <script type="text/javascript" src='js/user_interactions.js'></script>
     <script type="text/javascript" src="js/index.js"></script>
 </body>
 

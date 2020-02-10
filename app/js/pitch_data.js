@@ -13,7 +13,7 @@ console.log("device ready");
             });
    document.getElementById('edit-roster').addEventListener('click', (event) => {
 
-                  window.open('./season_select_menu.html');
+                  window.open('./roster_edit.html');
 
    });
 
