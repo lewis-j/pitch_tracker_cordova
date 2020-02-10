@@ -1,0 +1,246 @@
+#logo {
+  position: absolute;
+      margin-left: -54px;
+      margin-top: -42px;
+      transform: rotate(-13deg);
+      width: 105px;
+
+}
+
+#opening-menu h3{
+  padding: 3px;
+margin-left: 33px;
+}
+#login-container{
+    border: 2px solid black;
+    border-radius: 2px;
+    background-color: black;
+    opacity: .85;
+    width: 400px;
+    height: 400px;
+    margin: auto;
+
+}
+
+
+#login-container h3{
+    text-align: center;
+    margin: 70px 20px 50px;
+    color:white;
+}
+
+#login-container input{
+    display: block;
+    margin: 20px auto;
+
+}
+#login-container button{
+    display: block;
+    width:255px;
+    margin: 50px auto 5px;
+    background-color: #A8A8A8;
+}
+
+#start-background{
+
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  z-index: 5;
+  top: 0;
+  left: 0;
+  background-image: url(../img/homeplate.jpg);
+  background-repeat: no-repeat;
+  background-size:cover;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 20px;
+}
+#select-menu{
+  display: none;
+    border: 2px solid black;
+    border-radius: 2px;
+    background-color: black;
+    opacity: .85;;
+    padding: 40px;
+    color:white;
+    opacity: .85;
+    width: 400px;
+    height: 600px;
+    margin: auto;
+}
+
+#opening-menu{
+    border: 2px solid black;
+    border-radius: 2px;
+    background-color: black;
+    opacity: .85;;
+    padding: 40px;
+    color:white;
+    opacity: .85;
+    width: 400px;
+    height: 600px;
+    margin: auto;
+}
+
+#select-menu h3{
+    text-align: center;
+    margin-bottom: 40px;
+}
+.form-group p{
+    text-align: center;
+    font-weight: bolder;
+    font-size: 1.1em;
+
+}
+
+#start-btn{
+    width: 250px;
+    margin-bottom: 5px;
+}
+
+#new-btn{
+    width: 250px;
+    background-color: lightblue;
+      margin: 20px auto;
+}
+
+#load-btn{
+    width: 250px;
+    background-color: grey;
+    margin: 20px auto;
+}
+
+
+#database-btn{
+    width: 250px;
+    background-color: grey;
+    margin: 20px auto;
+}
+.form-group select{
+    display: block;
+    width:250px;
+    margin: 20px auto;
+}
+
+.clear-header{
+
+  top: 45px;
+
+}
+
+#app-title{
+  margin:auto;
+}
+
+#fullscreen {
+  position: absolute;
+  right:15px;
+
+}
+
+#left-nav-menu {
+  height: 100%;
+  width: 17vw;
+  position: absolute;
+  z-index: 6;
+  left: -17vw;
+  transition: 0.5s;
+  background-color: #f8fbff;;
+  overflow-x: hidden;
+  padding-top: 20px;
+}
+
+.left-menu-item {
+    font-size: 18px;
+    font-weight: bold;
+    padding: 5px;
+    margin: 10px 3px;
+    color: #15172C;
+    background-color: #ebeff5;
+    border-radius: 5px;
+    box-shadow: 0px 1px 1px #8a8787;
+}
+
+#left-nav-menu i {
+    position: absolute;
+    right: 10px;
+}
+
+#select-pitcher-screen{
+    height: 100%;
+    width: 0px;
+    position: fixed;
+    z-index: 11;
+    left: 172;
+    transition: 0.5s;
+    background-image: url(../img/homeplate.jpg);
+    overflow-x: hidden;
+    background-size: cover;
+ background-repeat: no-repeat;
+}
+
+#transfer-edit-screen{
+    height: 100%;
+    width: 0px;
+    position: fixed;
+    z-index: 11;
+    left: 172;
+    transition: 0.5s;
+    background-color: grey;
+}
+
+.close-btn {
+  position: absolute;
+  top: 0;
+  right: 40px;
+  color: white;
+  font-size: 36px;
+    z-index: 12;
+}
+
+#select-pitcher-menu{
+  text-align: center;
+  border: 2px solid black;
+  border-radius: 2px;
+  background-color: black;
+  opacity: .85;;
+  padding: 40px;
+  color:white;
+  opacity: .85;
+  width: 400px;
+  height: 600px;
+  margin: 30px
+  auto;
+  box-shadow: 3px 3px 10px #000000;
+}
+#new-pitcher-select {
+    margin: 30px 0px;
+}
+
+
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
+}
+
+
+#game-type-group{
+  opacity: 0;
+  visibility: hidden;
+   -webkit-transition: 1s;
+  transition: 1s;
+}
+
+#game-num-group{
+    opacity: 0;
+     visibility: hidden;
+    -webkit-transition: 1s;
+  transition: 1s;
+}
+#op-team-group{
+    opacity: 0;
+     visibility: hidden;
+   -webkit-transition: 1s;
+  transition: 1s;
+}
