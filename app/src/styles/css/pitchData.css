@@ -1,0 +1,87 @@
+@import url("https://fonts.googleapis.com/css?family=PT+Serif|Cinzel");
+/*banner ui and design file */
+.header {
+  background-color: #f8fbff;
+}
+
+.header-title {
+  font-family: "Cinzel", serif;
+  margin-top: 30px;
+  color: #002654;
+  text-align: center;
+  text-align: -webkit-center;
+}
+
+.header-title div {
+  font-weight: bold;
+  font-size: 40px;
+}
+
+.header-title p {
+  margin-left: 55px;
+  font-size: 25px;
+}
+
+#header-logo {
+  position: absolute;
+  margin-left: -87px;
+  margin-top: -42px;
+  transform: rotate(-8deg);
+  width: 105px;
+}
+
+#logout {
+  position: absolute;
+  right: 5px;
+  margin: 5px;
+}
+
+.clear-header {
+  top: 45px;
+}
+
+#app-title {
+  margin: auto;
+}
+
+#left-nav-menu {
+  height: 100%;
+  width: 17vw;
+  position: absolute;
+  z-index: 6;
+  left: -17vw;
+  transition: 0.5s;
+  background-color: #f8fbff;
+  overflow-x: hidden;
+  padding-top: 20px;
+  box-shadow: 1px 3px 3px #e4e4e4;
+}
+
+.left-menu-item {
+  font-size: 18px;
+  font-weight: bold;
+  padding: 5px;
+  margin-bottom: 10px;
+  margin: 2px;
+  background-color: #ffffff;
+  color: #002654;
+  border-radius: 5px;
+  box-shadow: 1px 1px 1px #efefef;
+}
+
+#left-nav-menu i {
+  position: absolute;
+  right: 10px;
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {
+    padding-top: 15px;
+  }
+
+  .sidenav a {
+    font-size: 18px;
+  }
+}
+
+/*# sourceMappingURL=pitchData.css.map */

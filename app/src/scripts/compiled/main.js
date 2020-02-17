@@ -1,0 +1,1853 @@
+// xmlhttprequest url 
+const url = "http://localhost:81/pitch_tracker_cordova/php/";
+
+/*next file*/
+
+//xmlhttprequest 
+
+function storeData(PlayerData) {
+console.log("storeData");
+	return xhrPost(PlayerData, "store_player_data.php");
+
+}
+
+function bulkStoreData(pitchesData) {
+console.log("bulkStoreData");
+	return xhrPost(pitchesData, "store_pitch_data.php");
+
+}
+
+function getRosterList(){
+console.log("getRosterList");
+			return xhrPost(null, "get_team_list.php");
+}
+
+function getRoster(){
+console.log("getRoster");
+			 return xhrPost(null, "get_team.php");
+}
+
+function xhrPost(sqlCallData, uri){
+
+	return new Promise(function(resolve, reject){
+var xhttp = new XMLHttpRequest();
+xhttp.open("POST",url + uri);
+
+
+xhttp.onreadystatechange = function() {
+    if (this.readyState === XMLHttpRequest.DONE){
+			if(this.status === 200) {
+      console.log("xhttp Response:", xhttp.response);
+      var obj = JSON.parse(xhttp.response);
+			console.log('response object', obj);
+			if(obj.loggedIn){
+				resolve(obj);
+			}else{
+				reject(JSON.stringify({ loggedIn: false}));
+			}
+
+
+	 } else{
+		    reject({
+					 status: xhttp.status,
+					 statusText: xhttp.statusText
+				 });
+	 }
+ }
+};
+xhttp.onerror = function () {
+console.error("** An error occurred during the transaction");
+};
+
+xhttp.send(JSON.stringify(sqlCallData));
+});
+}
+
+/*next file*/
+
+/*global PouchDB*/
+/*global storeData*/
+/*global loadSQL*/
+
+var pitchersDB = new PouchDB('pitchers');
+var pitchesDB = new PouchDB('pitch');
+var rostlistDB = new PouchDB('roster_list');
+var rostDB = new PouchDB('roster');
+var userDB = new PouchDB('user');
+
+function getPouchRosterList(){
+
+
+ // rostlistDB.destroy();
+
+
+return new Promise((response,rej)=>{
+
+  rostlistDB.info().then((res)=>{
+
+  return new Promise((resolve, reject)=>{
+    if(res.doc_count === 0){
+        resolve();
+    }else{
+      rostlistDB.allDocs({include_docs: true ,startkey: '_', descending:true})
+     .then((res)=>{
+     response(res.rows);
+     reject("returned from db.info() promise");
+   });
+  }
+  });
+})
+  .then((res) => {
+    return getRosterList();
+  }).then((obj)=> {
+      return rostlistDB.bulkDocs(obj.teamList);
+
+  }).then((res)=>{
+    return rostlistDB.allDocs({include_docs: true, descending:true});
+  }).then((found)=>{
+    response(found.rows);
+  }).catch(e => {
+    rej("Error in pouchDBTransfer: "+e);
+  });
+  });
+
+
+
+}
+
+function getPouchRoster(team_id){
+
+
+// db.destroy();
+
+return new Promise ((response,rej)=>{
+
+  rostDB.info().then((res)=>{
+
+  return new Promise((resolve, reject)=>{
+    if(res.doc_count === 0){
+        resolve();
+    }else{
+   rostDB.createIndex({
+       index: {
+         fields:['team_id']
+       }
+     }).then((res)=>{
+          return rostDB.find({
+      selector: {
+        team_id: team_id
+      }
+    });
+     }).then((found)=>{
+      response(found.docs);
+     reject("returned from db.info() promise");
+   });
+    }
+  });
+})
+  .then((res) => {
+    return getRoster();
+  }).then((obj)=> {
+    console.log("object returend", obj);
+     return rostDB.bulkDocs(obj.teamList);
+  }).then(()=>{
+
+  return rostDB.createIndex({
+       index: {
+         fields:['team_id']
+       }
+     });
+   }).then((res)=>{
+          return rostDB.find({
+      selector: {
+        team_id: team_id
+      }
+    });
+     }).then((found)=>{
+   response(found.docs)
+
+  })
+  .catch(e => {
+    rej(e);
+  });
+  });
+
+
+
+}
+
+function deletePouchPitches(id){
+
+pitchesDB.find({
+  selector:{
+    pitcher_id: id
+  }
+}).then((res)=>{
+
+  console.log("pitch data to delete:", res.docs);
+  res.docs.forEach( function(item){
+    console.log("item", item);
+    pitchesDB.remove(item);
+  });
+
+ return pitchersDB.get(id).then((res)=>{
+   pitchersDB.remove(res);
+ });
+
+}).then(()=>{
+
+}).catch((err)=>{
+  console.error("error in pouchDBTransfer deletepouchpitch", err);
+});
+
+
+}
+
+function getPouchPitcher(id = -1){
+
+       if(id == -1){
+         return pitchersDB.allDocs({include_docs: true, limit: 1, descending:true})
+            .then((res)=>{
+               return res.rows[0].doc;
+               });
+         }else{
+               return pitchersDB.get(id).then((res)=>{
+                 console.log("getPouchPitcher:", res._id);
+                 return res;
+               });
+         }
+
+  }
+
+function getPouchPitchers(){
+
+        return pitchersDB.allDocs({include_docs: true, descending:true})
+           .then((res)=>{
+              return res.rows;
+      });
+    }
+
+function pouchHasPitcher(){
+   return pitchersDB.allDocs({include_docs: true, limit: 1, descending:true})
+         .then((res)=>{
+            return res.total_rows != 0;
+    });
+
+}
+
+function getPouchPitches(id){
+  return pitchesDB.createIndex({
+       index: {
+         fields:['pitcher_id']
+       }
+     }).then((res)=>{
+
+       return pitchesDB.find({
+      selector: {
+        pitcher_id: id
+      }
+    })
+
+
+     });
+
+
+}
+
+function storePouch(data){
+  console.log("data object: ", data.objType);
+ switch(data.objType) {
+   case "1": return pitchersDB.put(data);
+   case "2": return pitchesDB.put(data);
+  }
+}
+
+function transferPouchToSql(){
+
+    // pitchesDB.allDocs({include_docs: true}).then((res)=>{
+    //     console.log("returned docs: ", res);
+    //   });
+  return new Promise ((pass,fail)=>{
+    pitchersDB.allDocs({include_docs: true})
+  .then((res)=>{
+    console.log(res.total_rows);
+
+      return res.rows.reduce((promise, docItem)=>{
+        console.log("docitem",docItem.doc);
+        return promise.then((res)=>{
+           return storeData(docItem.doc);
+
+        }).then((res)=>{
+          return pitchesDB.createIndex({
+                      index: {
+                      fields: ['pitcher_id']
+                  }
+                });
+
+
+        }).then(function () {
+          console.log("DOCITEM:", docItem.doc);
+                return pitchesDB.find({
+                        selector: {
+                        pitcher_id: docItem.doc.pitcher_id,
+                        }
+                     });
+                }).then((res)=>{
+                  console.log("item for bulkStoreData:", res.docs);
+           return bulkStoreData(res.docs, ).then((res)=>{
+             console.log("response from bulk store:", res);
+           });
+        });
+
+
+      }, Promise.resolve());
+
+
+  }).then((res)=>{
+    console.log("db destroyed");
+    pitchersDB.destroy().then((res)=>{
+    pitchersDB = new PouchDB('pitchers');
+    });
+    pitchesDB.destroy().then((res)=>{
+
+ pitchesDB = new PouchDB('pitch');
+    });
+    pass("Success!");
+
+  }).catch((error)=>{
+
+    console.log("no pitchers saved!:",error);
+    fail(error);
+  });
+  });
+}
+
+function syncRoster(){
+return new Promise((resolve, reject)=>{
+
+  rostDB.destroy().then((res)=>{
+    rostDB = new PouchDB('roster');
+      return getRoster();
+    }).then((obj)=> {
+        return rostDB.bulkDocs(obj.teamList);
+    }).then(()=>{
+      return rostlistDB.destroy();
+    }).then((res)=>{
+      rostlistDB = new PouchDB('roster_list');
+      return getRosterList();
+    }).then((obj)=>{
+      return rostlistDB.bulkDocs(obj.teamList);
+    }).then((res)=>{
+     return rostlistDB.allDocs({include_docs: true, descending:true});
+   }).then((found)=>{
+     console.log("found list: ",found);
+     resolve(found.rows);
+   }).catch((err)=>{
+       reject(err);
+
+   });
+});
+}
+
+/*next file*/
+
+$(function(){
+//login modal
+  $('#modal-container').append(`<div class="modal" tabindex="-1" role="dialog" id="login-modal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Login to access feature</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" id="login-body">
+          <form id="login-form">
+    <div class="form-group">
+      <label for="userName">Username</label>
+      <input type="text" class="form-control" id="userName" placeholder="Enter email" name="username">
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" class="form-control" id="password" placeholder="Password" name="password">
+    </div>
+    <button id="login-submit" type="submit" name="login-submit" class="btn btn-primary">Submit</button>
+    <p>Don't have an account?<a id="sign-up"> Sign up</a></p>
+  </form>
+        </div>
+      </div>
+    </div>
+  </div>
+`);
+
+$('#modal-container').append(`<div class="modal" tabindex="-1" role="dialog" id="register-modal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Sign Up</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="register-body">
+        <form id="register-form">
+  <div class="form-group">
+    <label for="userName">Username</label>
+    <input type="text" class="form-control" id="userName" placeholder="Enter userName" name="username">
+  </div>
+  <div class="form-group">
+    <label for="userName">Email</label>
+    <input type="email" class="form-control" id="email" placeholder="Enter email" name="email">
+  </div>
+  <div class="form-group">
+  <label for="role">Role</label>
+  <select id="role" class="form-control">
+    <option selected>Player</option>
+    <option>Coach</option>
+  </select>
+  </div>
+  <div class="form-group">
+    <label for="password">Password</label>
+    <input type="password" class="form-control" id="pwd" placeholder="Password" name="pwd">
+  </div>
+  <div class="form-group">
+    <label for="confirmPwd">Confirm Password</label>
+    <input type="password" class="form-control" id="confirmPwd" placeholder="confirm password" name="confirmPwd">
+  </div>
+  <button id="register-submit" type="submit" name="register-submit" class="btn btn-primary">Submit</button>
+</form>
+      </div>
+    </div>
+  </div>
+</div>
+`);
+
+      $('#login-form').submit((e)=>{
+        var callback = $('#modal-container').attr('data-callback');
+          console.log("form submitted", callback);
+                var params = `username=${$('#userName').val()}&password=${$('#password').val()}&login-submit=submit`;
+
+                console.log('params',params);
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                      console.log("login response",xhttp.response);
+
+                      var obj = JSON.parse(xhttp.response);
+                      console.log("length of errors:",Object.entries(obj.errors).length );
+                      if(Object.entries(obj.errors).length!==0){
+                        var errors = obj.errors;
+                        for(const item in errors){
+                              $('#login-body').prepend(`<div class=alert-danger>${errors[item]}</div>`);
+                        }
+                      }else{
+                        $('#login-modal').modal('toggle');
+                        window[callback].call();
+                      }
+
+
+
+
+                      }
+                    }
+                    xhttp.onerror = function () {
+                    console.error("** An error occurred during the transaction",xhttp.response);
+                  };
+
+
+                xhttp.open("POST",url + "SQLConnect.inc.php");
+                xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                xhttp.send(params);
+                e.preventDefault();
+              });
+
+    $('#register-form').submit((e)=>{
+      console.log("form submitted");
+            var params = `username=${$('#userName').val()}&password=${$('#pwd').val()}&confirmPassword=${$('#confirmPwd').val()}&email=${$('#email').val()}&role=${$('#role').val()}&register-submit=submit`;
+
+
+            console.log('params',params);
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                  console.log("login response",xhttp.response);
+                  console.log("login response",JSON.parse(xhttp.response));
+                  var obj = JSON.parse(xhttp.response);
+                  if(Object.entries(obj.errors).length!==0!==0){
+                    var errors = obj.errors;
+                    for(const item in errors){
+                          $('#register-body').prepend(`<div class=alert-danger>${errors[item]}</div>`);
+                    }
+                  }else{
+                      $('#register-modal').modal('toggle');
+                  }
+
+
+                // window.open('../links/season_select_menu.html');
+
+                  }
+                }
+                xhttp.onerror = function () {
+                console.error("** An error occurred during the transaction",xhttp.response);
+              };
+
+
+            xhttp.open("POST",url + "SQLConnect.inc.php");
+            xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            xhttp.send(params);
+e.preventDefault();
+
+
+
+    });
+
+
+      $('#logout').click(()=>{
+         var xhttp = new XMLHttpRequest();
+         xhttp.onreadystatechange = function() {
+             if (this.readyState == 4 && this.status == 200) {
+                 window.open('../index.html','_self');
+               }
+             }
+             xhttp.onerror = function () {
+             console.error("** An error occurred during the transaction",xhttp.response);
+           };
+
+         xhttp.open("POST",url + "logout.php");
+
+         xhttp.send();
+      });
+$('#sign-up').click(()=>{
+  $('#login-modal').modal('toggle');
+  $('#register-modal').modal('toggle');
+});
+
+    });
+
+/*next file*/
+
+//dependency: login_modal.js
+function initUserInteractions(){
+
+$('.login-btn').click(()=>{
+  console.log("login btn pressed");
+  $('#login-modal').modal("toggle");
+});
+
+$('.signup-btn').click(()=>{
+  $('#register-modal').modal("toggle");
+  });
+
+$('.signout-btn').click(()=>{
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+          window.open('./index.html','_self');
+        }
+      }
+      xhttp.onerror = function () {
+      console.error("** An error occurred during the transaction",xhttp.response);
+    };
+
+  xhttp.open("POST",url + "logout.php");
+
+  xhttp.send();
+
+
+});
+
+
+
+
+
+}
+
+window.addEventListener('load', function() {
+  initUserInteractions();
+}, false);
+
+/*next file*/
+
+function initIndex() {
+  //colors for pitch radio buttons and cirlce elements
+  // [FASTBALL, CHANGEUP, SLIDER, CURVEBALL, OTHER ]
+  const pitchColors = ["red", "blue", "green", "purple", "orange"];
+
+  document.body.style.setProperty('--FB-color', pitchColors[0]);
+  document.body.style.setProperty('--CH-color', pitchColors[1]);
+  document.body.style.setProperty('--SL-color', pitchColors[2]);
+  document.body.style.setProperty('--CB-color', pitchColors[3]);
+  document.body.style.setProperty('--OT-color', pitchColors[4]);
+
+  // object structure for sql database
+  var PlayerData = {
+    // game session data(persist through game)
+    objType: "1",
+    /* jad */
+    startingPitcher: true,
+    //        player_id: "sql index"
+    //        gameType : "GAME, InterSquad, OR BULLPEN ",
+    //        date : "CURRENT DATE",
+    //        time :"Current Time",
+    //        team: "SRJC TEAM",
+    //        opponent: "RIVAL TEAM",
+    //        playerName : "PLAYER NAME",
+  }
+
+  // data to collect for each pitch
+  var pitchData = [
+    //     {
+    //        objType: "2", /* jad */
+    //        play: "BALL,STRIKE,HIT,MISS",
+    //        pitchType: "CHANGEUP, SLIDER, FASTBALL, CURVEBALL",
+    //        pitchSpeed:"MPH",
+    //        xCoord: "GRAPHS X COORDINATE IN PERCENT",
+    //        yCoord: "GRAPHS Y COORDINATE IN PERCENT",
+    //        firstPitch: "BOOLEAN FOR FIRST PITCH AT EACH UP AT BAT",
+    //        pitchCount: "CURRENT PITCH COUNT",
+    //        endPlay:"WALK, STRIKEOUT, HIT",
+    //        batterHandedness: "LEFT OR RIGHT HANDED"
+    //    }
+  ];
+
+  //set dynamic style rules
+  var headerHeight =  $('#header-title').height();
+document.querySelectorAll('.clear-header').forEach((ele, index)=>{
+              console.log("elements", headerHeight);
+              ele.style.setProperty('--header-height',headerHeight+"px");
+});
+  scalePitchGraph();
+  window.addEventListener('resize', () => {
+    scalePitchGraph();
+  });
+
+
+  /* Begin jad */
+  var gl_newPitcher = false; /*switching new pitch to boolean 0=false 1=true*/
+  /* End jad */
+  var gameCount = {
+    totalStrikes: 0,
+    totalBalls: 0,
+    pitchCount: 0,
+    ballCount: 0,
+    strikeCount: 0
+  };
+  var db = new PouchDB("pitch");
+  var myCircle;
+  var newCircle = true;
+  var redoHandlerInit = false;
+  var mphValue = 0;
+  var redoPitch = [];
+  //pitcher id for pouchDB index
+  var pitcher_id;
+  var arcs, arc, pie, paths, strikePerc;
+
+  renderPie([0, 0]);
+  change([0, 1]);
+
+
+
+  $('#mySVG').click((evt) => {
+
+    var event = evt.target.getBoundingClientRect();
+    var outerRect = document.getElementById("rect").getBoundingClientRect();
+    var x = (((evt.clientX - outerRect.left) / (outerRect.right - outerRect.left)) * 100).toString() + "%";
+    var y = (((evt.clientY - outerRect.top) / (outerRect.bottom - outerRect.top)) * 100).toString() + "%";
+    var svgNS = "http://www.w3.org/2000/svg";
+    if (event.left === outerRect.left) {
+      document.getElementById("switch_ball").checked = true;
+      if (gameCount.ballCount == 3) {
+        // document.getElementById('label_w').classList.add('warning_indicator');
+
+      }
+    } else {
+      document.getElementById("switch_stk").checked = true;
+      if (gameCount.strikeCount >= 2) {
+
+        // document.getElementById('label_sOut').classList.add('warning_indicator');
+      }
+    }
+
+    if (redoHandlerInit) {
+      $('#data-entry').text("Enter");
+      $('#data-entry').off('click');
+      $('#data-entry').on('click', collectData);
+
+      redoHandlerInit = false;
+      newCircle = true;
+      redoPitch = [];
+
+    }
+
+
+
+    if (newCircle) {
+      myCircle = document.createElementNS(svgNS, "circle"); //to create a circle. for rectangle use "rectangle"
+      myCircle.setAttributeNS(null, "class", "mycircle");
+      myCircle.setAttributeNS(null, "cx", x);
+      myCircle.setAttributeNS(null, "cy", y);
+      myCircle.setAttributeNS(null, "r", 8);
+      myCircle.setAttributeNS(null, "fill", "black");
+      // myCircle.setAttributeNS(null, "stroke", "black");
+      // myCircle.setAttributeNS(null, "stroke-width", "1px");
+      myCircle.savedToGraph = false;
+
+      document.getElementById("mySVG").appendChild(myCircle);
+      newCircle = false;
+
+      if (document.getElementById('mph-dropdown').classList.value != "mph-slide") {
+        document.getElementById('mph-dropdown').classList.toggle('mph-slide');
+      }
+    } else {
+      myCircle.setAttributeNS(null, "cx", x);
+      myCircle.setAttributeNS(null, "cy", y);
+    }
+
+
+
+
+  });
+
+  $('#data-entry').on("click", collectData);
+
+
+  function collectData() {
+
+
+    var pitchObject = {};
+
+    pitchObject.objType = "2"; /* jad */
+
+    if (isValid()) {
+      pitchObject.xCoord = myCircle.getAttributeNS(null, "cx");
+      pitchObject.yCoord = myCircle.getAttributeNS(null, "cy");
+
+      if (pitchObject.firstPitch = document.getElementById('first-pitch').checked) {
+        document.getElementById('first-pitch').checked = false;
+      }
+
+      if (document.getElementById("switch_lhh").checked) {
+        pitchObject.batterHandedness = "Left";
+      } else if (document.getElementById("switch_rhh").checked) {
+        pitchObject.batterHandedness = "Right";
+      }
+
+      var radioEle = document.getElementsByName("switch_play");
+      for (var i = 0; i < radioEle.length; i++) {
+        if (radioEle[i].checked) {
+          radioEle[i].checked = false;
+          pitchObject.play = radioEle[i].getAttribute('value');
+          if (pitchObject.play == "Strike") {
+            gameCount.totalStrikes++;
+            gameCount.strikeCount++;
+
+
+
+          } else {
+            gameCount.totalBalls++;
+            gameCount.ballCount++;
+          }
+        }
+      }
+
+
+      var radioEle = document.getElementsByName("switch_pitch");
+      for (var i = 0; i < radioEle.length; i++) {
+        if (radioEle[i].checked) {
+          radioEle[i].checked = false;
+          pitchObject.pitchType = radioEle[i].getAttribute('value');
+
+          //assign colors to circles based on pitch selected
+
+          pitchObject.pitchColor = pitchColors[i];
+
+
+        }
+
+      }
+
+      var radioEle = document.getElementsByName("switch_end");
+      pitchObject.endPlay = "continue";
+      for (var i = 0; i < radioEle.length; i++) {
+        if (radioEle[i].checked) {
+          radioEle[i].checked = false;
+          pitchObject.endPlay = radioEle[i].getAttribute('value');
+          document.getElementById('first-pitch').checked = true;
+          resetBatterStance();
+          gameCount.ballCount = 0;
+          gameCount.strikeCount = 0;
+          // document.getElementById('label_sOut').classList.remove("warning_indicator");
+          // document.getElementById('label_w').classList.remove("warning_indicator");
+
+        }
+      }
+
+      pitchObject.pitchSpeed = mphValue;
+      document.getElementById('mph-text').innerHTML = "00";
+      mphValue = 0;
+      myCircle.savedToGraph = true;
+      gameCount.pitchCount++;
+
+      pitchObject.gameCount = gameCount;
+      pitchObject.date = getTodaysDate("yyyy/mm/dd");
+      pitchObject.timeStamp = getCurrentTime();
+      myCircle.setAttributeNS(null, "fill", pitchObject.pitchColor);
+      newCircle = true;
+      /* Begin jad */
+      if (gl_newPitcher) /*switching new pitch to boolean 0=false 1=true*/ {
+        gl_newPitcher = false;
+        pitchObject._id = new Date();
+        PlayerData._id = new Date();
+
+        pitchObject.pitcher_id = PlayerData._id;
+
+
+        storePouch(PlayerData).then(function(res) {
+          return storePouch(pitchObject);
+        }).catch(function(err) {
+          console.error(err)
+        });
+
+      } else {
+        pitchObject._id = new Date();
+        pitchObject.pitcher_id = PlayerData._id;
+        storePouch(pitchObject).catch((err) => {
+          console.error(err);
+        });
+      }
+      /* End jad */
+      pitchData.push(pitchObject);
+
+      //updatedata on left panel ui
+      updateGameCountUI(gameCount);
+
+
+
+    }
+
+
+
+
+
+
+
+  }
+
+  function isValid() {
+    var valid = true;
+    if (newCircle) {
+      alert('No coordinate point added to pitch zone! Add a coordinate to continue.');
+      valid = false;
+    }
+    if (mphValue == 0) {
+      document.getElementById('mph-ui').classList.add('ui_invalid');
+      valid = false;
+    }
+
+    var batterUI = document.querySelectorAll("#batter-handedness label");
+    if ((!document.getElementById("switch_lhh").checked) && (!document.getElementById("switch_rhh").checked)) {
+      batterUI.forEach(function(item) {
+        item.classList.remove("ui_invalid");
+        setTimeout(function() {
+          item.classList.add("ui_invalid");
+        }, 1);
+
+      });
+      valid = false;
+    } else {
+      batterUI.forEach(function(item) {
+        item.classList.remove("ui_invalid");
+      });
+    }
+    var radioEle = document.getElementsByName("switch_pitch");
+    var wasChecked = false;
+    for (var i = 0; i < radioEle.length; i++) {
+      if (radioEle[i].checked) {
+        wasChecked = true;
+      }
+    }
+    if (!wasChecked) {
+      valid = false;
+      var pitchSelectUI = document.querySelectorAll("#pitch-fields label");
+      pitchSelectUI.forEach(function(item) {
+        item.classList.add('ui_invalid');
+
+      });
+    }
+
+    return valid;
+
+
+
+
+  }
+  //Remove last entered pitch data
+  $('#undo-entry').click((event) => {
+    if (pitchData.length > 0) {
+      var circle = document.getElementsByClassName('mycircle');
+      var lastElement = circle[circle.length - 1];
+      if (lastElement.savedToGraph) {
+        db.allDocs({
+            include_docs: true,
+            startkey: '_',
+            limit: 2,
+            descending: true
+          })
+          .then(res => {
+            if (pitchData.length == 0) {
+
+              updateGameCountUI(zeroGameCount(gameCount));
+            } else {
+              gameCount = res.rows[1].doc.gameCount;
+              updateGameCountUI(gameCount);
+
+            }
+
+            return db.get(res.rows[0].id);
+
+
+
+          }).then((doc) => {
+
+            redoPitch.push({
+              circle: lastElement,
+              pitchData: doc
+            });
+
+            return db.remove(doc);
+
+          }).catch((err) => {
+            console.error(err);
+          });
+
+        pitchData.pop();
+
+
+      }
+      if (!redoHandlerInit) {
+        $('#data-entry').text("Redo");
+        $('#data-entry').off('click');
+        $('#data-entry').on('click', redoEntry);
+        redoHandlerInit = true;
+
+      }
+      //Remove data from array and erase circle
+      lastElement.parentNode.removeChild(lastElement);
+    }
+  });
+
+  function redoEntry() {
+    if (redoPitch.length > 0) {
+
+
+      delete redoPitch[redoPitch.length - 1].pitchData._rev;
+
+
+      gameCount = redoPitch[redoPitch.length - 1].pitchData.gameCount;
+      updateGameCountUI(gameCount);
+
+      pitchData.push(redoPitch[redoPitch.length - 1].pitchData);
+
+      storePouch(redoPitch[redoPitch.length - 1].pitchData, "pitch").catch((err) => {
+        console.error(err);
+
+      });
+      document.getElementById("mySVG").appendChild(redoPitch[redoPitch.length - 1].circle);
+      redoPitch.pop();
+
+    }
+
+
+
+
+  }
+
+  function zeroGameCount(gameCount) {
+
+    gameCount.ballCount = 0;
+    gameCount.strikeCount = 0;
+    gameCount.totalBalls = 0;
+    gameCount.totalStrikes = 0;
+    gameCount.pitchCount = 0;
+
+    return gameCount;
+  }
+
+  function getCurrentTime() {
+
+    var today = new Date();
+    return today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+  }
+
+  function getTodaysDate(format) {
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth() + 1; //January is 0!
+
+    var yyyy = today.getFullYear();
+    if (dd < 10) {
+      dd = '0' + dd;
+    }
+    if (mm < 10) {
+      mm = '0' + mm;
+    }
+
+    if (format === "yyyy/mm/dd") {
+      return (yyyy + '/' + mm + '/' + dd);
+    } else {
+      return (mm + '/' + dd + '/' + yyyy);
+    }
+
+  }
+
+  function resetBatterStance() {
+
+    //    document.getElementById('right-batter').style.backgroundColor = "white";
+    //    document.getElementById('right-batter').style.color = "black";
+    //    document.getElementById('left-batter').style.backgroundColor = "white";
+    //    document.getElementById('left-batter').style.color = "black";
+    document.getElementById("switch_rhh").checked = false;
+    document.getElementById("switch_lhh").checked = false;
+    document.getElementById('right-batter').style.display = "none";
+    document.getElementById('left-batter').style.display = "none";
+  }
+
+  var pitchersData = [];
+
+
+
+  getPouchRosterList().then((res) => {
+
+    res.forEach((item, index) => {
+      item = item.doc;
+
+      if (res.length - 1 == index) {
+        $('#roster-list').append("<option selected data-id=" + item._id + ">" + item.year + " " + item.season + " " + item.title + "</option");
+        rosterIndex = parseInt(item._id);
+      } else {
+        $('#roster-list').append("<option data-id=" + item._id + ">" + item.year + " " + item.season + " " + item.title + "</option");
+      }
+
+    });
+    return getPouchRoster(1);
+
+  }).then((res) => {
+    pitchersData = res;
+    res.forEach((item) => {
+      $('#pitcher-name').append("<option data-id=" + item._id + ">" + item.pitcher_name + "</option");
+    });
+
+  }).catch((err) => {
+    console.log("login test", err);
+    console.error(err)
+  });
+
+
+  $('#roster-list').change((e) => {
+    var index = parseInt(e.target.options[e.target.selectedIndex].dataset.id);
+    getPouchRoster(index).then((res) => {
+
+      $('#pitcher-name').empty();
+      $('#pitcher-name').append("<option selected disabled value='unselected'><i>Select Pitcher</i></option>");
+      pitchersData = res;
+      res.forEach((item) => {
+        $('#pitcher-name').append("<option data-id=" + item._id + ">" + item.pitcher_name + "</option");
+      });
+    });
+  });
+
+  var opposingTeams = ["SRJC", "Chabot", "De Anza", "Marin", "Laney", "Canada", "Solano", "Contra Costa", "Cabrillo", "San Juaquin Delta", "Modesto", "Diablo Valley", "Folsom Lake", "American River", "Cosumnes River", "Monterey Peninsula", "Sacromento City", "Seirra"];
+
+  opposingTeams.forEach((team) => {
+    $('#op-team-name').append(`<option>${team}</option`);
+
+  });
+
+
+
+  var mphFirstClick = true;
+  var pitcherSelectInit = false;
+  var styledCircle;
+
+
+
+  // Open numerical keybaord
+  $('#HUD-2 g ').click(function(event) {
+
+    //Assign value from first click
+    var value = $(this)[0].lastElementChild.innerHTML;
+    if (mphFirstClick) {
+      mphValue = 0;
+      mphValue = value;
+      mphFirstClick = false;
+      styledCircle = this.children[0].style;
+      styledCircle.fill = "red";
+
+    } else {
+      //Assign value from second click
+      mphValue += value;
+      document.getElementById('mph-dropdown').classList.toggle('mph-slide');
+      mphFirstClick = true;
+      styledCircle.fill = "white";
+      document.getElementById('mph-text').innerHTML = mphValue;
+      document.getElementById("mph-ui").classList.remove("ui_invalid");
+    }
+
+  });
+  $('#mph-ui').click(function(event) {
+    document.getElementById('mph-dropdown').classList.toggle('mph-slide');
+
+
+  });
+  $('#batter-handedness input').click((e) => {
+
+    var backgrnClr = "#A90714";
+
+    var batterUI = document.querySelectorAll("#batter-handedness label");
+    batterUI.forEach(function(item) {
+      item.classList.remove("ui_invalid");
+
+    });
+
+    if (e.target.id === "switch_lhh") {
+      document.getElementById('right-batter').style.display = "none";
+      document.getElementById('left-batter').style.display = "block";
+    } else {
+      document.getElementById('left-batter').style.display = "none";
+      document.getElementById('right-batter').style.display = "block";
+    }
+
+  });
+  $('#pitch-fields input').click(() => {
+    var pitchSelectUI = document.querySelectorAll("#pitch-fields label");
+    pitchSelectUI.forEach(function(item) {
+      item.classList.remove("ui_invalid");
+
+    });
+
+  });
+
+  $("#new-btn").click((e) => {
+
+
+    $('#opening-menu').css('display', 'none');
+    $('#select-menu').css('display', 'block');
+
+
+
+  });
+
+  $('#new-btn-back').click((e) => {
+    $('#opening-menu').css('display', 'block');
+    $('#select-menu').css('display', 'none');
+  });
+
+  // $("#new-btn").on("touchend", function () {alert('hello touch ! =o' )});
+
+
+  $('#database-btn').click(() => {
+
+    window.location.href = "links/pitch_data.html";
+  });
+
+
+
+  $('#start-btn').click(() => {
+    var valid = true;
+    if ((document.getElementById("pitcher-name").selectedIndex - 1) != -1) {
+
+      PlayerData.playerName = pitchersData[document.getElementById("pitcher-name").selectedIndex - 1].pitcher_name;
+      PlayerData.player_id = pitchersData[document.getElementById("pitcher-name").selectedIndex - 1]._id;
+
+      if ((document.getElementById("game-type").selectedIndex - 1) != -1) {
+        PlayerData.gameType = $('#game-type').val();
+        if ($('#game-type').val() == "Game") {
+          if ((document.getElementById("op-team-name").selectedIndex - 1) != -1) {
+            PlayerData.opponent = $('#op-team-name').val();
+            PlayerData.gameNum = $('#game-num').val()
+          } else {
+            document.getElementById("op-team-name").classList.add('ui_invalid');
+            valid = false;
+          }
+        } else {
+          PlayerData.opponent =  $('#game-type').val();
+          PlayerData.gameNum = "1";
+        }
+
+      } else {
+        document.getElementById("game-type").classList.add('ui_invalid');
+        valid = false;
+      }
+    } else {
+      document.getElementById("pitcher-name").classList.add('ui_invalid');
+      valid = false;
+    }
+
+    if (valid) {
+
+      gl_newPitcher = true; /* jad */
+      $('#start-background').css('display', 'none');
+      document.getElementById('first-pitch').checked = true;
+      PlayerData.objType = "1";
+      PlayerData.date = getTodaysDate("yyyy/mm/dd");
+      PlayerData.timeStamp = getCurrentTime();
+      updateLeftPanel(PlayerData, {
+        gameCount
+      });
+    }
+
+  });
+
+  $('#sync-roster').click(fetchRosterList);
+
+
+  $('#pitcher-name').change((e) => {
+    $('#game-type-group').css('opacity', '1');
+    $('#game-type-group').css('visibility', 'visible');
+  });
+
+  $('#pitcher-name').click((e) => {
+  $("#pitcher-name").removeClass('ui_invalid');
+  });
+
+  $('#game-type').change((e) => {
+    if (e.target.value == "Game") {
+      $('#op-team-group').css('opacity', '1');
+      $('#op-team-group').css('visibility', 'visible');
+    } else {
+      $('#op-team-group').css('opacity', '0');
+      $('#game-num-group').css('opacity', '0');
+      $('#op-team-group').css('visibility', 'hidden');
+      $('#game-num-group').css('visibility', 'hidden');
+    }
+  });
+
+  $('#game-type').click((e) => {
+    document.getElementById("game-type").classList.remove('ui_invalid');
+  });
+
+  $('#op-team-name').change((e) => {
+    $('#game-num-group').css('opacity', '1');
+    $('#game-num-group').css('visibility', 'visible');
+  });
+
+  $('#op-team-name').click((e) => {
+    document.getElementById("op-team-name").classList.remove('ui_invalid');
+  });
+
+
+  $('#load-btn').click(() => {
+    $('#transfer-edit-screen').addClass('full-open-menu');
+    $('#transfer-edit-content').empty();
+    loadPouchPitchMenu();
+    // loadPitchGame();
+  });
+
+  function fetchRosterList(){
+    syncRoster().then((rosterList) => {
+
+
+      $('#roster-list').empty();
+      rosterList.forEach((item, index) => {
+        item = item.doc;
+
+        if (rosterList.length - 1 == index) {
+          $('#roster-list').append("<option selected data-id=" + item._id + ">" + item.year + " " + item.season + " " + item.title + "</option");
+          rosterIndex = parseInt(item._id);
+        } else {
+          $('#roster-list').append("<option data-id=" + item._id + ">" + item.year + " " + item.season + " " + item.title + "</option");
+        }
+      });
+
+      return getPouchRoster(1);
+
+    }).then((res) => {
+      pitchersData = res;
+      $('#pitcher-name').empty();
+      $('#pitcher-name').append("<option selected disabled value='unselected'><i>Select Pitcher</i></option>");
+      res.forEach((item) => {
+        $('#pitcher-name').append("<option data-id=" + item._id + ">" + item.pitcher_name + "</option");
+      });
+
+    }).catch((err) => {
+
+
+      //the json is ok
+      if(jsonChecker(err)){
+        loginCheck(err,'fetchRosterList');
+      }else{
+          console.error(err);
+      }
+
+
+
+
+
+    });
+
+  }
+
+  function loadPitchGame(id) {
+    var tempPitcher;
+    getPouchPitcher(id).then((res) => {
+      tempPitcher = res;
+      $('#start-background').css('width', '0');
+      PlayerData._id = res._id;
+
+      return getPouchPitches(res._id);
+
+    }).then((res) => {
+      var pitchesArray = pitchData = res.docs;
+      updateLeftPanel(tempPitcher, pitchesArray[pitchesArray.length - 1]);
+      gameCount = pitchesArray[pitchesArray.length - 1].gameCount;
+
+      var svgNS = "http://www.w3.org/2000/svg";
+      pitchesArray.forEach((item) => {
+
+        myCircle = document.createElementNS(svgNS, "circle"); //to create a circle. for rectangle use "rectangle"
+        myCircle.setAttributeNS(null, "class", "mycircle");
+        myCircle.setAttributeNS(null, "cx", item.xCoord);
+        myCircle.setAttributeNS(null, "cy", item.yCoord);
+        myCircle.setAttributeNS(null, "r", 8);
+        myCircle.setAttributeNS(null, "fill", item.pitchColor);
+        // myCircle.setAttributeNS(null, "stroke", "black");
+        // myCircle.setAttributeNS(null, "stroke-width", "1px");
+        myCircle.savedToGraph = true;
+
+        document.getElementById("mySVG").appendChild(myCircle);
+        newCircle = true;
+      });
+    }).catch((err) => {
+      console.error(err);
+    });;
+
+  }
+
+  function loadPouchPitchMenu() {
+
+    getPouchPitchers().then((res) => {
+
+      var body = document.getElementById('transfer-edit-content');
+      var button = document.createElement('button');
+      button.setAttribute('class', 'delete-pouch');
+      // button.setAttribute('data-toggle','modal');
+      // button.setAttribute('data-target','#delete-local-modal');
+
+      res.forEach((item) => {
+
+        playerInfo = item.doc;
+        tr = document.createElement('tr');
+        tr.setAttribute('class', 'row-items');
+        tr.setAttribute('data-id', playerInfo._id);
+        td = document.createElement('td');
+        td.innerHTML = playerInfo.playerName;
+        tr.appendChild(td);
+        td = td.cloneNode(true);
+        td.innerHTML = playerInfo.date;
+        tr.appendChild(td);
+        td = td.cloneNode(true);
+        td.innerHTML = playerInfo.gameType;
+        tr.appendChild(td);
+        td = td.cloneNode(true);
+        td.innerHTML = playerInfo.opponent;
+        button = button.cloneNode(true);
+        button.innerHTML = 'Delete';
+        tr.appendChild(td);
+        tr.appendChild(button);
+
+        body.appendChild(tr);
+
+
+      });
+
+      $('.row-items').click((e) => {
+
+        clearCircles();
+        loadPitchGame(e.target.parentNode.dataset.id);
+        closeAllMenus($('#transfer-edit-screen'));
+      });
+
+
+
+
+      $('.delete-pouch').click((e) => {
+        e.stopPropagation();
+        var htmlCollection = e.target.parentNode.children;
+        var rowTitles = e.target.parentNode.parentNode.parentNode.children[0].children[0].children;
+
+        var table = document.createElement('table');
+        table.setAttribute('class', 'game-stat table table-striped table-border  table-sm');
+        var body = document.createElement('tbody');
+
+        for (var i = 0; i < htmlCollection.length - 1; i++) {
+
+
+          var tr = document.createElement('tr');
+          var th = document.createElement('th');
+          var thProp = document.createElement('th');
+
+          th.innerHTML = `${rowTitles[i].innerHTML}`;
+          thProp.innerHTML = htmlCollection[i].innerHTML;
+
+          tr.appendChild(th);
+          tr.appendChild(thProp);
+          body.appendChild(tr);
+          table.appendChild(body);
+
+        }
+
+
+        document.getElementById('delete-local-modal-body').innerHTML = "";
+        document.getElementById('delete-local-modal-body').appendChild(table);
+
+        var deleteBtn = document.getElementById('confirm-local-delete');
+        deleteBtn.setAttribute('data-id', e.target.parentNode.dataset.id);
+
+        $("#delete-local-modal").modal('show');
+      });
+
+
+    }).catch((err) => {
+      console.error("Error in script.js:", err);
+
+    });
+
+  }
+
+  function updateLeftPanel(pitcherObj, pitchObj) {
+
+    $('#date').text(pitcherObj.date);
+    $('#game-type-dspy').text(pitcherObj.gameType);
+    $('#pitcher-name-dspy').text(pitcherObj.playerName);
+    $('#op-team-name-dspy').text(pitcherObj.opponent);
+
+    updateGameCountUI(pitchObj.gameCount);
+
+  }
+
+  function renderPie(data) {
+
+
+    var svg = d3.select("#strike-pie"),
+      width = svg.attr("width"),
+      height = svg.attr("height"),
+      radius = Math.min(width, height) / 2,
+      g = svg.append("g").attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+    g.append("circle")
+      .attr("cx", 0)
+      .attr("cy", 0)
+      .attr("r", radius)
+      .attr("fill", "#F1F1F1");
+
+
+    strikePerc = svg.append("text").attr(
+        "transform", "translate(" + width / 2 + "," + height / 5 + ")")
+
+      .attr('dy', '2em')
+      .attr("text-anchor", "middle")
+      .style("font-size", "15px")
+      .style("text-decoration", "bold")
+      .text("$");
+
+    var color = d3.scaleOrdinal(['#A70415', '#15172C']);
+
+    // Generate the pie
+    pie = d3.pie();
+
+    // Generate the arcs
+    arc = d3.arc()
+      .innerRadius(radius * .7)
+      .outerRadius(radius);
+
+
+
+    //Generate groups
+    arcs = g.selectAll("arc")
+      .data(pie(data))
+      .enter()
+      .append("g")
+      .attr("class", "arc");
+
+    arcs.transition()
+      .duration(500)
+      .attr("fill", function(d, i) {
+        return color(i);
+      })
+      .attr("d", arc)
+      .each(function(d) {
+        this._current = d;
+      }); // store the initial angles
+
+    //Draw arc paths
+    arcs.append("path")
+      .attr("fill", function(d, i) {
+        return color(i);
+      })
+      .attr("d", arc);
+
+    paths = svg.selectAll('path');
+  }
+
+  function change(data) {
+    var perc = 0;
+    var total = data[0] + data[1];
+    paths.data(pie(data));
+    paths.transition().duration(750).attrTween("d", arcTween); // redraw the arcs
+    if (total != 0) {
+      perc = ((data[0] / total) * 100);
+    }
+
+    strikePerc.text(perc.toFixed(1) + "%");
+
+
+  }
+
+  // Store the displayed angles in _current.
+  // Then, interpolate from _current to the new angles.
+  // During the transition, _current is updated in-place by d3.interpolate.
+  function arcTween(a) {
+    var i = d3.interpolate(this._current, a);
+    this._current = i(1);
+    return function(t) {
+      return arc(i(t));
+    };
+  }
+
+  function updateGameCountUI(x) {
+    $('#pitch-count').text(x.pitchCount);
+    $('#total-balls').text(x.totalBalls);
+    $('#total-strikes').text(x.totalStrikes);
+    $('#balls').text(x.ballCount);
+    $('#strikes').text(x.strikeCount);
+    change([x.totalStrikes, x.totalBalls]);
+  }
+
+
+  $('#switch_stk').click(() => {
+    if (gameCount.strikeCount >= 2) {
+
+      // document.getElementById('label_sOut').classList.add('warning_indicator');
+    }
+
+  });
+
+  $('[name="switch_end"]').on("click", (e) => {
+    if (e.target.clickedOnce) {
+      e.target.clickedOnce = false;
+      e.target.checked = false;
+    } else {
+      $('[name="switch_end"]').each((index) => {
+        $('[name="switch_end"]')[index].clickedOnce = false;
+      });
+    }
+    if (e.target.checked) {
+      e.target.clickedOnce = true;
+    }
+  });
+
+  $('#switch-pitcher').click(function() {
+
+    // closeAllMenus(document.getElementById('transfer-edit-screen'));
+    hideMenu($('#transfer-edit-screen'));
+
+    $('#select-pitcher-screen').addClass('menu-page-open');
+
+    if (!pitcherSelectInit) {
+      pitcherSelectInit = true;
+      pitchersData.forEach((pitcher) => {
+        $('#new-pitcher-select').append(`<option>${pitcher.pitcher_name}</option`);
+      });
+    }
+
+
+  });
+
+  $('#transfer-data').click(() => {
+
+    hideMenu($('#select-pitcher-screen'));
+
+    $('#transfer-edit-screen').addClass('menu-page-open');
+    $('#transfer-edit-content').empty();
+
+    loadPouchPitchMenu();
+    // closeAllMenus(document.getElementById('select-pitcher-screen'));
+
+
+  });
+
+  $('#confirm-local-upload').click((e) => {
+
+    uploadData();
+
+  });
+
+
+  $('#confirm-local-delete').click((e) => {
+
+    deletePouchPitches(e.target.dataset.id);
+
+  });
+
+
+  function hideMenu($menuPage) {
+    $menuPage.addClass('page-transition');
+    if ($menuPage.hasClass('menu-page-open')) {
+      $menuPage.removeClass('menu-page-open');
+    }
+    removeMenuListeners();
+    setTimeout(() => {
+      $menuPage.removeClass('page-transition');
+    }, 1000);
+
+  }
+
+  $('#view-data').click(() => {
+    window.open("links/pitch_data.html","_self");
+  });
+
+  $('#enter-new-pitcher').click(() => {
+    PlayerData.playerName = pitchersData[document.getElementById("new-pitcher-select").selectedIndex].pitcher_name;
+    PlayerData.pitcher_id = pitchersData[document.getElementById("new-pitcher-select").selectedIndex]._id;
+    PlayerData.startingPitcher = false;
+
+    clearCircles();
+    //close nav menus
+    document.getElementById("left-nav-menu").style.left = "-17vw";
+    document.getElementById('select-pitcher-screen').style.left = "-17vw";
+    document.getElementById('select-pitcher-screen').style.width = "0px";
+    removeMenuListeners();
+    setTimeout(() => {
+      document.getElementById('select-pitcher-screen').style.left = "17vw";
+    }, 1000);
+
+    //update UI
+    resetBatterStance();
+    $('#pitcher-name-dspy').text(PlayerData.playerName);
+    gl_newPitcher = true; /* jad */
+    updateGameCountUI(zeroGameCount(gameCount));
+    document.getElementById('first-pitch').checked = true;
+
+  });
+
+  function clearCircles() {
+    //clear pitch graph
+    var circles = document.getElementsByClassName('mycircle');
+    if (circles.length > 0) {
+      for (var i = circles.length - 1; i >= 0; i--) {
+        document.getElementById('mySVG').removeChild(circles[i]);
+
+      }
+      newCircle = true;
+    }
+  }
+
+  function openMenu() {
+    lnm = document.getElementById('left-nav-menu');
+    lnm.classList.add('lnm-opened');
+    document.addEventListener("click", checkForClose, true);
+    console.log("openeing left nav");
+    $(this).addClass('open');
+    $(this).one("click", closeMenu);
+}
+function closeMenu() {
+  console.log("closing left nav");
+
+  closeAllMenus($('.menu-page-open'));
+    $(this).removeClass('open');
+    $(this).one("click", openMenu);
+}
+$("#menu-btn").one("click", openMenu);
+
+
+
+
+
+
+
+
+
+  $(".close-btn").click(function(e) {
+
+    closeAllMenus($(e.target.parentNode));
+  $('#menu-btn').removeClass('open').one("click", openMenu);
+
+  });
+
+
+  function closeAllMenus($openMenu) {
+  $openMenu.bind("animationend webkitAnimationEnd oAnimationEnd MSAnimationEnd", animEnd);
+  $openMenu.bind("animationstart webkitAnimationStart oanimationstart  msAnimationStart ", animstart);
+  closeAnimation($openMenu);
+
+    console.log("in closeAllMenus" , $openMenu);
+
+       removeMenuListeners();
+  }
+
+function animEnd(obj){
+  console.log("ended animation", obj.target.style);
+    unsetAnimation($(obj.target));
+    $("#left-nav-menu").removeClass('lnm-opened');
+    $(obj.target).removeClass('menu-page-open');
+    $(obj.target).removeClass('full-open-menu');
+
+}
+
+function animstart(obj){
+  console.log("started animation", $(obj.target));
+}
+
+
+function closeAnimation($ele){
+  $ele.css('animation','close-window .5s forwards');
+  $ele.css('-webkit-animation','close-window .5s forwards');
+
+}
+function unsetAnimation($ele){
+  console.log("unsetting animation", $ele);
+  $ele.css('animation','');
+  $ele.css('-webkit-animation','');
+
+
+}
+  function checkForClose(event) {
+    var elements = [document.getElementById("left-nav-menu"), document.getElementById("transfer-edit-screen"),
+      document.getElementById('select-pitcher-screen')
+    ];
+
+    // event.preventDefault();
+    // event.stopPropagation
+    var clickedMenuItem = elements.length !== elements.reduce((total, ele) => {
+      if (event.target !== ele && !ele.contains(event.target)) {
+
+        return total + 1;
+      } else {
+        return total;
+      }
+    }, 0);
+
+
+
+
+    if (!clickedMenuItem) {
+    $("#left-nav-menu").removeClass('lnm-opened');
+    }
+
+
+  }
+
+  // function closeLeftMenu(event) {
+  //   event.preventDefault();
+  //   event.stopPropagation();
+  //   $("left-nav-menu").removeClass('lnm-opened');
+  //   removeMenuListeners();
+  // }
+
+  function removeMenuListeners() {
+    document.removeEventListener("click", checkForClose, true);
+
+  }
+
+  //definition for full screen mode
+  function GoInFullscreen(element) {
+
+    if (element.requestFullscreen)
+      element.requestFullscreen();
+    else if (element.mozRequestFullScreen)
+      element.mozRequestFullScreen();
+    else if (element.webkitRequestFullscreen)
+      element.webkitRequestFullscreen();
+    else if (element.msRequestFullscreen)
+      element.msRequestFullscreen();
+  }
+  //definitijon for full screen exit
+  function GoOutFullscreen() {
+    if (document.exitFullscreen)
+      document.exitFullscreen();
+    else if (document.mozCancelFullScreen)
+      document.mozCancelFullScreen();
+    else if (document.webkitExitFullscreen)
+      document.webkitExitFullscreen();
+    else if (document.msExitFullscreen)
+      document.msExitFullscreen();
+  }
+
+  //open app in full screen mode using body elemnt
+  $('#fullscreen').click((e) => {
+    if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement || null) {
+
+      GoOutFullscreen($('body').get(0));
+      e.target.classList.remove("fa-compress");
+      e.target.classList.add("fa-expand");
+
+    } else {
+      GoInFullscreen($('body').get(0));
+      e.target.classList.remove("fa-expand");
+      e.target.classList.add("fa-compress");
+    }
+  });
+
+}
+
+function scalePitchGraph() {
+  let h = window.innerHeight;
+  let w = $('#pitch-zone').width();
+  $('#pitch-zone').height(h - $('#header-title').height());
+
+  if (h == Math.min(h, w)) {
+
+    $('#pitch-zone > svg').css('height', '100%');
+    $('#pitch-zone > svg').css('width', h * .91);
+    $('#pitch-zone > svg').css('margin-top', 0);
+  } else {
+
+    $('#pitch-zone > svg').css('height', w * 1.099);
+    $('#pitch-zone > svg').css('width', w);
+    $('#pitch-zone > svg').css('margin-top', ($('#pitch-zone').height() - $('#pitch-zone > svg').height()) * .5);
+  }
+}
+
+function uploadData(){
+  document.getElementById('upload-btn').innerHTML = "Uploading Pitch Data <div class='loader'></div>";
+  transferPouchToSql().then((res) => {
+
+
+    document.getElementById('upload-btn').innerHTML = "Transfer Success";
+    document.getElementById('upload-btn').setAttribute("class", "btn btn-success");
+
+    setTimeout(() => {
+      window.open("./");
+    }, 3000);
+
+
+  });
+
+}
+
+function jsonChecker(err){
+
+  return (/^[\],:{}\s]*$/.test(err.replace(/\\["\\\/bfnrtu]/g, '@').
+replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').
+replace(/(?:^|:|,)(?:\s*\[)+/g, '')));
+
+}
+
+function loginCheck(err, functionName){
+  var errorObj = JSON.parse(err);
+  if(!errorObj.loggedIn){
+
+     //send function name as attr
+        $('#modal-container').attr('data-callback',functionName);
+      //open login Modal
+         $('#login-modal').modal();
+  }else{
+    console.err(err);
+  }
+
+}
+
+window.addEventListener('load', function() {
+  initIndex();
+}, false);

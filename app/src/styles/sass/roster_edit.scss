@@ -1,0 +1,113 @@
+@use 'header';
+@use 'light_menu_style';
+
+//roster_edit
+@import url('https://fonts.googleapis.com/css?family=PT+Serif|Cinzel');
+
+
+body {
+font-family: 'Cinzel', serif;
+	background-color:#f2f6fb;
+}
+
+
+
+
+.enter-changes{
+	position: absolute;
+	right: 67px;
+}
+
+.seasons-info {
+
+
+font-size: 24px;
+
+}
+
+.season-item{
+margin: 6px auto;
+border-radius: 15px;
+box-shadow: 1px 1px 3px black;
+background-color: white;
+}
+
+#seasons-list{
+width:100%;
+
+}
+.input-name{
+	margin-left: 5px;
+}
+
+.roster-list{
+	transition:max-height 1s;
+	overflow: hidden;
+	max-height: 0px;
+}
+
+.inline-title{
+	display: inline-block;
+  width: 80%;
+  margin: 23px 0px;
+}
+.season-edit{
+	display: inline-block;
+	position: absolute;
+	right: 54px;
+	top: 17px;
+	background-color:white;
+	color:black;
+}
+
+.delete-season{
+	display: inline-block;
+	position: absolute;
+	right:8px;
+	top: 17px;
+	background-color: white;
+	color:red;
+}
+
+.edit-player{
+	position: relative;
+float: right;
+}
+
+.delete-player{
+	position: relative;
+float: right;
+}
+
+.player-name{
+	display: inline-block;
+}
+
+.name-input{
+	width: 50%;
+	display:inline-block;
+}
+
+.back-btn{
+	float: right;
+}
+
+.enter-btn{
+	float: right;
+}
+
+.right-align{
+text-align: right;
+}
+.add-icon{
+	display: inline-block;
+	float: right;
+}
+.back-edit{
+position: absolute;
+right: 15px;
+}
+.add-season-changes{
+	position: absolute;
+	right: 47px;
+}

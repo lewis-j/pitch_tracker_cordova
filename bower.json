@@ -1,0 +1,22 @@
+{
+  "name": "pitch_tracker_cordova",
+  "description": "baseball pitch tracker",
+  "main": "index.js",
+  "authors": [
+    "Lindsey Jackson"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/lewis-j/pitch_tracker_cordova",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^3.4.1",
+    "bootstrap": "^4.4.1",
+    "pouchdb": "^7.2.1"
+  }
+}
