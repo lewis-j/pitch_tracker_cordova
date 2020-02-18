@@ -33,7 +33,8 @@ module.exports = function(grunt) {
 
     concat: {
       options: {
-        separator: '\n/*next file*/\n\n'
+        separator: '\n/*next file*/\n\n',
+         sourceMap :true
       },
       index: {
         src: ['app/src/scripts/config.js','app/src/scripts/xml_calls.js','app/src/scripts/pouch_db_transfer.js','app/src/scripts/login_modal.js','app/src/scripts/user_interactions.js','app/src/scripts/index.js'],
@@ -85,35 +86,10 @@ module.exports = function(grunt) {
               }
             }
           },
-          bower: {
-                      flat: {
-                          dest: 'scripts',
-                          options: {
-                              debugging: true
-                          }
-                      }
-                  },
-  bower_concat: {
-  all: {
-    dest: {
-      'js': 'build/_bower.js',
-      'css': 'build/_bower.css'
-    },
-    dependencies: {
-      'bootstrap': 'jquery'
-    },
-    mainFiles: {
-        'bootstrap': ['dist/css/bootstrap.min.css', 'bootstrap.bundle.min.js']
-         },
-    bowerOptions: {
-      relative: false
-    }
-  }
-}
         });
 
   // Default task
-  grunt.registerTask('default', ['bower_concat','watch']);
+  grunt.registerTask('default', ['js','watch']);
   grunt.registerTask('css', ['sass', 'cssmin']);
   grunt.registerTask('js', ['concat', 'uglify']);
 
@@ -123,7 +99,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify-es');
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-concat');
-  grunt.loadNpmTasks('main-bower-files');
-  grunt.loadNpmTasks('grunt-bower-concat');
+
 
 };

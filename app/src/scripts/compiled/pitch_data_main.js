@@ -583,3 +583,5 @@ function getSeason(){
 }
 
 window.addEventListener('load', OnDeviceReady);
+
+//# sourceMappingURL=pitch_data_main.js.map

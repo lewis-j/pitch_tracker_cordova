@@ -779,3 +779,5 @@ function deleteSeason(e){
     $('#confirm-delete-season').attr('data-id',id);
        $('#delete-modal').modal('toggle');
 }
+
+//# sourceMappingURL=roster_edit_main.js.map

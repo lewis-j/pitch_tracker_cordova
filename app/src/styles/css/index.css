@@ -684,7 +684,7 @@ input:checked + .slider-2:before {
 }
 
 #select-pitcher-screen {
-  background-image: url(../img/homeplate.jpg);
+  background-image: url(../../img/homeplate.jpg);
   background-size: cover;
   background-repeat: no-repeat;
 }
